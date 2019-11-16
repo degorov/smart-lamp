@@ -21,7 +21,7 @@ enc = encoder.Encoder(ENCODER_PIN_A, ENCODER_PIN_B, 0, 1)
 
 if ENCODER_PIN_BUTTON.value():
     try:
-        wifi_config_file = open('wifi.cfg', 'r')
+        wifi_config_file = open('cfg/wifi.cfg', 'r')
         wifi_config = [x.strip() for x in wifi_config_file.readlines()]
         wifi_config_file.close()
         print('Got network configuration:' + str(wifi_config))
@@ -34,7 +34,7 @@ if ENCODER_PIN_BUTTON.value():
         wifi.hotspot()
 else:
     try:
-        uos.remove('wifi.cfg')
+        uos.remove('cfg/wifi.cfg')
     finally:
         print('Wi-Fi configuration reset')
         wifi.hotspot()
@@ -90,6 +90,9 @@ try:
 
         effects.all_random()
         led.render()
+
+        # print(str(enc.position))
+        # utime.sleep_ms(250)
 
         frame_end_us = utime.ticks_us()
         print("fps:", str(int(1000000 / (frame_end_us - frame_start_us))))
