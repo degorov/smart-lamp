@@ -36,8 +36,10 @@ else:
         wifi.hotspot()
 
 
-ntp.settime()
-print('Datetime set:', api.datetime())
+if ntp.settime():
+    print('Datetime set from NTP:', api.datetime())
+else:
+    print('Could not sync time from NTP')
 
 
 http_socket = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)

@@ -11,7 +11,10 @@ host = "pool.ntp.org"
 def time():
     NTP_QUERY = bytearray(48)
     NTP_QUERY[0] = 0x1b
-    addr = usocket.getaddrinfo(host, 123)[0][-1]
+    try:
+        addr = usocket.getaddrinfo(host, 123)[0][-1]
+    except:
+        return 0
     s = usocket.socket(usocket.AF_INET, usocket.SOCK_DGRAM)
     try:
         s.settimeout(1)
@@ -26,5 +29,8 @@ def time():
 # utime.localtime() will return UTC time (as if it was .gmtime())
 def settime():
     t = time()
+    if t == 0:
+        return False
     tm = utime.localtime(t)
     machine.RTC().datetime((tm[0], tm[1], tm[2], tm[6] + 1, tm[3], tm[4], tm[5], 0))
+    return True
