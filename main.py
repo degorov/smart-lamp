@@ -43,6 +43,11 @@ else:
     print('Could not sync time from NTP')
 
 
+# effect = effects.AllRandom()
+# effect = effects.LoopNumbers(10)
+effect = effects.AllHueLoop()
+
+
 http_socket = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
 http_socket.setsockopt(usocket.SOL_SOCKET, usocket.SO_REUSEADDR, 1)
 http_socket.bind(('0.0.0.0', 80))
@@ -51,7 +56,6 @@ http_socket.setblocking(False)
 
 http_poll = uselect.poll()
 http_poll.register(http_socket, uselect.POLLIN)
-
 
 try:
     http_connections = {}; http_requests = {}; http_responses = {}
@@ -87,8 +91,7 @@ try:
                 http_connections[fileno].close()
                 del http_connections[fileno]
 
-        # effects.all_random()
-        effects.loop_numbers()
+        effect.update()
         led.render()
 
         print(encoder.value())
