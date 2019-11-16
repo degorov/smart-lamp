@@ -5,17 +5,24 @@ import uos
 import usocket
 import uselect
 
+import button
+import encoder
 import led
 import wifi
 import ntp
 import api
-import encoder
 import effects
 
 
-ENCODER_PIN_BUTTON = machine.Pin(27, machine.Pin.IN, machine.Pin.PULL_UP)
-
-if ENCODER_PIN_BUTTON.value():
+if button.pressed():
+    try:
+        uos.remove('cfg/wifi.cfg')
+    except:
+        pass
+    finally:
+        print('Wi-Fi configuration reset')
+        wifi.hotspot()
+else:
     try:
         wifi_config_file = open('cfg/wifi.cfg', 'r')
         wifi_config = [x.strip() for x in wifi_config_file.readlines()]
@@ -25,14 +32,8 @@ if ENCODER_PIN_BUTTON.value():
             pass
         else:
             pass
-    except OSError:
+    except:
         print('No Wi-Fi config file found')
-        wifi.hotspot()
-else:
-    try:
-        uos.remove('cfg/wifi.cfg')
-    finally:
-        print('Wi-Fi configuration reset')
         wifi.hotspot()
 
 
