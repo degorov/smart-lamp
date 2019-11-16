@@ -87,7 +87,8 @@ try:
                 http_connections[fileno].close()
                 del http_connections[fileno]
 
-        effects.all_random()
+        # effects.all_random()
+        effects.loop_numbers()
         led.render()
 
         print(encoder.value())
