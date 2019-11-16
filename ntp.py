@@ -20,6 +20,8 @@ def time():
         s.settimeout(1)
         res = s.sendto(NTP_QUERY, addr)
         msg = s.recv(48)
+    except:
+        return 0
     finally:
         s.close()
     val = ustruct.unpack("!I", msg[40:44])[0]
