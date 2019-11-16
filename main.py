@@ -5,19 +5,15 @@ import uos
 import usocket
 import uselect
 
-import encoder
 import led
 import wifi
 import ntp
 import api
+import encoder
 import effects
 
 
-ENCODER_PIN_A = machine.Pin(32, machine.Pin.IN, machine.Pin.PULL_UP)
-ENCODER_PIN_B = machine.Pin(33, machine.Pin.IN, machine.Pin.PULL_UP)
 ENCODER_PIN_BUTTON = machine.Pin(27, machine.Pin.IN, machine.Pin.PULL_UP)
-
-enc = encoder.Encoder(ENCODER_PIN_A, ENCODER_PIN_B, 0, 1)
 
 if ENCODER_PIN_BUTTON.value():
     try:
@@ -91,8 +87,8 @@ try:
         effects.all_random()
         led.render()
 
-        # print(str(enc.position))
-        # utime.sleep_ms(250)
+        print(encoder.value())
+        # utime.sleep_ms(100)
 
         frame_end_us = utime.ticks_us()
         print("fps:", str(int(1000000 / (frame_end_us - frame_start_us))))
