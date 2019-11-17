@@ -1,5 +1,3 @@
-import machine
-import esp
 import utime
 import uos
 import usocket
@@ -45,7 +43,8 @@ else:
 
 # effect = effects.AllRandom()
 # effect = effects.LoopNumbers(10)
-effect = effects.AllHueLoop()
+# effect = effects.AllHueLoop()
+effect = effects.AllHueRotate()
 
 
 http_socket = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
