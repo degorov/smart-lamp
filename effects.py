@@ -3,6 +3,7 @@ import uos
 import glyph
 import encoder
 import button
+import urandom
 
 
 # ============================================================================ #
@@ -94,3 +95,26 @@ class AllHueSaturationRotate:
         for x in range(led.LED_WIDTH):
             for y in range(led.LED_HEIGHT):
                 led.led_matrix[x][y] = (self.hue, self.sat, 127)
+
+# ============================================================================ #
+
+class Matrix:
+
+    def __init__(self, density, trail):
+        self.density = density
+        self.trail = trail
+
+    def update(self):
+
+        for x in range(led.LED_WIDTH):
+            this_color_val = led.led_matrix[x][0][2]
+            if this_color_val == 0:
+                led.led_matrix[x][0] = (0, 255, 255 * (urandom.randrange(self.density) == 0))
+            elif this_color_val < self.trail:
+                led.led_matrix[x][0] = (0, 0, 0)
+            else:
+                led.led_matrix[x][0] = (0, 255, this_color_val - self.trail)
+
+        for x in range(led.LED_WIDTH):
+            for y in range(led.LED_HEIGHT - 1, 0, -1):
+                led.led_matrix[x][y] = led.led_matrix[x][y - 1]

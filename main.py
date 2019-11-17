@@ -45,7 +45,8 @@ else:
 # effect = effects.LoopNumbers(10)
 # effect = effects.AllHueLoop()
 # effect = effects.AllHueRotate()
-effect = effects.AllHueSaturationRotate()
+# effect = effects.AllHueSaturationRotate()
+effect = effects.Matrix(32, 24)
 
 
 http_socket = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
