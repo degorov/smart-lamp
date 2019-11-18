@@ -95,11 +95,11 @@ try:
         effect.update()
         led.render()
 
-        print(encoder.value())
+        # print(encoder.value())
         # utime.sleep_ms(100)
 
         frame_end_us = utime.ticks_us()
-        print("fps:", str(int(1000000 / (frame_end_us - frame_start_us))))
+        print("fps:", str(int(1000000 / utime.ticks_diff(frame_end_us, frame_start_us))))
 
 finally:
     http_poll.unregister(http_socket)

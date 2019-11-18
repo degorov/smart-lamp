@@ -101,6 +101,12 @@ def hsv_to_rainbow_rgb(hue, sat, val):
     return r, g, b
 
 
+def fill_solid(h, s, v):
+    for x in range(LED_WIDTH):
+        for y in range(LED_HEIGHT):
+            led_matrix[x][y] = (h, s, v)
+
+
 def render():
     for x in range(LED_WIDTH):
         for y in range(LED_HEIGHT):

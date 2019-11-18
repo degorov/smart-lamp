@@ -45,9 +45,7 @@ class AllHueLoop:
 
     def update(self):
 
-        for x in range(led.LED_WIDTH):
-            for y in range(led.LED_HEIGHT):
-                led.led_matrix[x][y] = (self.hue, 255, 192)
+        led.fill_solid(self.hue, 255, 192)
 
         if self.hue == 256:
             self.hue = 0
@@ -58,9 +56,7 @@ class AllHueLoop:
 
 class AllHueRotate:
     def update(self):
-        for x in range(led.LED_WIDTH):
-            for y in range(led.LED_HEIGHT):
-                led.led_matrix[x][y] = (encoder.value() % 255, 255, 192)
+        led.fill_solid(encoder.value() % 255, 255, 192)
 
 # ============================================================================ #
 
@@ -92,9 +88,7 @@ class AllHueSaturationRotate:
 
         print("hue=", self.hue, "; sat=", self.sat)
 
-        for x in range(led.LED_WIDTH):
-            for y in range(led.LED_HEIGHT):
-                led.led_matrix[x][y] = (self.hue, self.sat, 127)
+        led.fill_solid(self.hue, self.sat, 127)
 
 # ============================================================================ #
 
