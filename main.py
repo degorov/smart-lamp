@@ -46,7 +46,8 @@ else:
 # effect = effects.AllHueLoop()
 # effect = effects.AllHueRotate()
 # effect = effects.AllHueSaturationRotate()
-effect = effects.Matrix(32, 24)
+# effect = effects.Matrix(32, 24)
+effect = effects.Dawn()
 
 
 http_socket = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)

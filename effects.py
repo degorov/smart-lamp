@@ -6,6 +6,10 @@ import button
 import urandom
 
 
+def remap(x, in_min, in_max, out_min, out_max):
+    return int((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
+
+
 # ============================================================================ #
 
 class AllRandom:
@@ -112,3 +116,24 @@ class Matrix:
         for x in range(led.LED_WIDTH):
             for y in range(led.LED_HEIGHT - 1, 0, -1):
                 led.led_matrix[x][y] = led.led_matrix[x][y - 1]
+
+# ============================================================================ #
+
+class Dawn:
+
+    def __init__(self):
+        self.dawn_position = 0
+        self.dawn_brightness = 200
+
+    def update(self):
+
+        dawn_color = (remap(self.dawn_position, 0, 255, 10, 35),
+                      remap(self.dawn_position, 0, 255, 255, 170),
+                      remap(self.dawn_position, 0, 255, 10, self.dawn_brightness));
+
+        led.fill_solid(*dawn_color)
+
+        if self.dawn_position == 256:
+            self.dawn_position = 0
+        else:
+            self.dawn_position += 1
