@@ -105,5 +105,5 @@ def render():
     for x in range(LED_WIDTH):
         for y in range(LED_HEIGHT):
             idx = led_map[x][y]
-            led_buffer[idx], led_buffer[idx + 1], led_buffer[idx + 2] = hsv_to_rainbow_rgb(*led_matrix[x][y])
+            led_buffer[idx + 1], led_buffer[idx], led_buffer[idx + 2] = hsv_to_rainbow_rgb(*led_matrix[x][y])
     esp.neopixel_write(LED_PIN, led_buffer, 1)

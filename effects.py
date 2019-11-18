@@ -109,11 +109,11 @@ class Matrix:
         for x in range(led.LED_WIDTH):
             this_color_val = led.led_matrix[x][0][2]
             if this_color_val == 0:
-                led.led_matrix[x][0] = (0, 255, 255 * (urandom.randrange(self.density) == 0))
+                led.led_matrix[x][0] = (96, 255, 255 * (urandom.randrange(self.density) == 0))
             elif this_color_val < self.trail:
-                led.led_matrix[x][0] = (0, 0, 0)
+                led.led_matrix[x][0] = (96, 0, 0)
             else:
-                led.led_matrix[x][0] = (0, 255, this_color_val - self.trail)
+                led.led_matrix[x][0] = (96, 255, this_color_val - self.trail)
 
         for x in range(led.LED_WIDTH):
             for y in range(led.LED_HEIGHT - 1, 0, -1):
