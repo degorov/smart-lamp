@@ -4,11 +4,7 @@ import glyph
 import encoder
 import button
 import urandom
-
-
-def remap(x, in_min, in_max, out_min, out_max):
-    return int((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
-
+import func
 
 # ============================================================================ #
 
@@ -98,20 +94,20 @@ class AllHueSaturationRotate:
 
 class Matrix:
 
-    def __init__(self, density, trail):
-        self.density = density
-        self.trail = trail
+    def __init__(self, scale, step):
+        self.scale = scale
+        self.step = step
 
     def update(self):
 
         for x in range(led.LED_WIDTH):
-            this_color_val = led.led_matrix[x][0][2]
-            if this_color_val == 0:
-                led.led_matrix[x][0] = (96, 255, 255 * (urandom.randrange(self.density) == 0))
-            elif this_color_val < self.trail:
-                led.led_matrix[x][0] = (96, 0, 0)
+            this_color_v = led.led_matrix[x][0][2]
+            if this_color_v == 0:
+                led.led_matrix[x][0] = (96, 255, 255 * (urandom.randrange(self.scale) == 0))
+            elif this_color_v < self.step:
+                led.led_matrix[x][0] = (0, 0, 0)
             else:
-                led.led_matrix[x][0] = (96, 255, this_color_val - self.trail)
+                led.led_matrix[x][0] = (96, 255, this_color_v - self.step)
 
         for x in range(led.LED_WIDTH):
             for y in range(led.LED_HEIGHT - 1, 0, -1):
@@ -121,15 +117,15 @@ class Matrix:
 
 class Dawn:
 
-    def __init__(self):
+    def __init__(self, dawn_brightness):
+        self.dawn_brightness = dawn_brightness
         self.dawn_position = 0
-        self.dawn_brightness = 200
 
     def update(self):
 
-        dawn_color = (remap(self.dawn_position, 0, 255, 10, 35),
-                      remap(self.dawn_position, 0, 255, 255, 170),
-                      remap(self.dawn_position, 0, 255, 10, self.dawn_brightness));
+        dawn_color = (func.remap(self.dawn_position, 0, 255, 10, 35),
+                      func.remap(self.dawn_position, 0, 255, 255, 170),
+                      func.remap(self.dawn_position, 0, 255, 10, self.dawn_brightness));
 
         led.fill_solid(*dawn_color)
 
