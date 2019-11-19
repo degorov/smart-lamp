@@ -235,3 +235,86 @@ class Lighters:
                 self.lighters_speed[1][i] = -self.lighters_speed[1][i]
 
             led.led_matrix[self.lighters_pos[0][i] // 10][self.lighters_pos[1][i] // 10] = self.lighters_color[i]
+
+# ============================================================================ #
+
+class Fire:
+
+    def __init__(self, hue_rotation, sparkles):
+
+        self.loading_flag = True
+
+        self.hue_rotation = hue_rotation
+        self.sparkles = sparkles
+
+        self.line = [0] * led.LED_WIDTH
+        self.pcnt = 0
+
+        self.matrix_value = [ [0] * 8 for _ in range(8) ]
+
+        self.value_mask = ((32 , 0  , 0  , 0  , 0 , 0  , 0  , 0  ),
+                           (64 , 0  , 0  , 0  , 0 , 0  , 0  , 0  ),
+                           (96 , 32 , 0  , 0  , 0 , 0  , 0  , 32 ),
+                           (128, 64 , 32 , 0  , 0 , 0  , 32 , 64 ),
+                           (160, 96 , 64 , 32 , 0 , 32 , 64 , 96 ),
+                           (192, 128, 96 , 64 , 32, 64 , 96 , 128),
+                           (255, 160, 128, 96 , 64, 96 , 128, 160),
+                           (255, 192, 160, 128, 96, 128, 160, 192))
+
+        self.hue_mask = ((1 , 11, 19, 22, 25, 22, 19, 11),
+                         (1 , 8 , 13, 19, 22, 19, 13, 8 ),
+                         (1 , 8 , 13, 16, 19, 16, 13, 8 ),
+                         (1 , 5 , 11, 13, 16, 13, 11, 5 ),
+                         (1 , 5 , 11, 11, 13, 11, 11, 5 ),
+                         (0 , 1 , 5 , 8 , 11, 8 , 5 , 1 ),
+                         (0 , 0 , 1 , 5 , 8 , 5 , 1 , 0 ),
+                         (0 , 0 , 0 , 1 , 5 , 1 , 0 , 0 ))
+
+
+    def generate_line(self):
+        for x in range(led.LED_WIDTH):
+            self.line[x] = urandom.randrange(64, 255)
+
+
+    def update(self):
+
+        if self.loading_flag:
+            self.loading_flag = False
+            self.generate_line()
+
+        if self.pcnt >= 100:
+
+            for y in range(led.LED_HEIGHT - 1, 0, -1):                             # UPSIDE DOWN
+                for x in range(led.LED_WIDTH):
+                    if y <= 7:
+                        self.matrix_value[y][x] = self.matrix_value[y - 1][x]
+
+            for x in range(led.LED_WIDTH):
+                self.matrix_value[0][x] = self.line[x]
+
+            self.generate_line()
+            self.pcnt = 0
+
+        for y in range(led.LED_HEIGHT - 1, 0, -1):
+            for x in range(0, led.LED_WIDTH):
+                if y < 8:
+                    led.led_matrix[x][y] = (int(self.hue_rotation + self.hue_mask[y][x]),
+                                            255,
+                                            int(max(0, (((100.0 - self.pcnt) * self.matrix_value[y][x] + self.pcnt * self.matrix_value[y - 1][x]) / 100.0) - self.value_mask[y][x])))
+                elif y == 8 and self.sparkles:
+                    if (urandom.randrange(0, 20) == 0) and led.led_matrix[x][y - 1][2] > 0:
+                        led.led_matrix[x][y] = led.led_matrix[x][y - 1]
+                    else:
+                        led.led_matrix[x][y] = (0, 0, 0)
+                elif self.sparkles:
+                    if led.led_matrix[x][y - 1][2] > 0:
+                        led.led_matrix[x][y] = led.led_matrix[x][y - 1]
+                    else:
+                        led.led_matrix[x][y] = (0, 0, 0)
+
+        for x in range(led.LED_WIDTH):
+            led.led_matrix[x][0] = (int(self.hue_rotation + self.hue_mask[0][x]),
+                                    255,
+                                    int(((100.0 - self.pcnt) * self.matrix_value[0][x] + self.pcnt * self.line[x]) / 100.0))
+
+        self.pcnt = self.pcnt + 30
