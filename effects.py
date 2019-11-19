@@ -133,3 +133,27 @@ class Dawn:
             self.dawn_position = 0
         else:
             self.dawn_position += 1
+
+# ============================================================================ #
+
+class Sparkles:
+
+    def __init__(self, scale, step):
+        self.scale = scale
+        self.step = step
+
+    def update(self):
+
+        for i in range(self.scale):
+            x = urandom.randrange(led.LED_WIDTH)
+            y = urandom.randrange(led.LED_HEIGHT)
+            if led.led_matrix[x][y][2] == 0:
+                led.led_matrix[x][y] = (ord(uos.urandom(1)), 255, 255)
+
+        for x in range(led.LED_WIDTH):
+            for y in range(led.LED_HEIGHT):
+                this_color = led.led_matrix[x][y]
+                if this_color[2] > self.step:
+                    led.led_matrix[x][y] = (this_color[0], this_color[1], this_color[2] - self.step)
+                else:
+                    led.led_matrix[x][y] = (0, 0, 0)
