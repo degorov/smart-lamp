@@ -12,7 +12,7 @@ class AllRandom:
     def update(self):
         for x in range(led.LED_WIDTH):
             for y in range(led.LED_HEIGHT):
-                led.led_matrix[x][y] = (ord(uos.urandom(1)), ord(uos.urandom(1)), int(ord(uos.urandom(1)) / 2))
+                led.led_matrix[x][y] = (ord(uos.urandom(1)), ord(uos.urandom(1)), ord(uos.urandom(1)))
 
 # ============================================================================ #
 
@@ -101,17 +101,17 @@ class Matrix:
     def update(self):
 
         for x in range(led.LED_WIDTH):
-            this_color_v = led.led_matrix[x][0][2]
+            this_color_v = led.led_matrix[x][led.LED_HEIGHT - 1][2]
             if this_color_v == 0:
-                led.led_matrix[x][0] = (96, 255, 255 * (urandom.randrange(self.scale) == 0))
+                led.led_matrix[x][led.LED_HEIGHT - 1] = (96, 255, 255 * (urandom.randrange(self.scale) == 0))
             elif this_color_v < self.step:
-                led.led_matrix[x][0] = (0, 0, 0)
+                led.led_matrix[x][led.LED_HEIGHT - 1] = (0, 0, 0)
             else:
-                led.led_matrix[x][0] = (96, 255, this_color_v - self.step)
+                led.led_matrix[x][led.LED_HEIGHT - 1] = (96, 255, this_color_v - self.step)
 
         for x in range(led.LED_WIDTH):
-            for y in range(led.LED_HEIGHT - 1, 0, -1):
-                led.led_matrix[x][y] = led.led_matrix[x][y - 1]
+            for y in range(led.LED_HEIGHT - 1):
+                led.led_matrix[x][y] = led.led_matrix[x][y + 1]
 
 # ============================================================================ #
 
@@ -168,14 +168,14 @@ class Snow:
     def update(self):
 
         for x in range(led.LED_WIDTH):
-            for y in range(led.LED_HEIGHT - 1, 0, -1):
-                led.led_matrix[x][y] = led.led_matrix[x][y - 1]
+            for y in range(led.LED_HEIGHT - 1):
+                led.led_matrix[x][y] = led.led_matrix[x][y + 1]
 
         for x in range(led.LED_WIDTH):
-            if led.led_matrix[x][1][2] == 0 and (urandom.randrange(self.scale) == 0):
-                led.led_matrix[x][0] = [(94, 16, 255), (93, 25, 255), (95, 31, 253), (123, 43, 255)][urandom.randrange(4)]
+            if led.led_matrix[x][led.LED_HEIGHT - 2][2] == 0 and (urandom.randrange(self.scale) == 0):
+                led.led_matrix[x][led.LED_HEIGHT - 1] = [(94, 16, 255), (93, 25, 255), (95, 31, 253), (123, 43, 255)][urandom.randrange(4)]
             else:
-                led.led_matrix[x][0] = (0, 0, 0)
+                led.led_matrix[x][led.LED_HEIGHT - 1] = (0, 0, 0)
 
 # ============================================================================ #
 
@@ -284,7 +284,7 @@ class Fire:
 
         if self.pcnt >= 100:
 
-            for y in range(led.LED_HEIGHT - 1, 0, -1):                             # UPSIDE DOWN
+            for y in range(led.LED_HEIGHT - 1, 0, -1):
                 for x in range(led.LED_WIDTH):
                     if y <= 7:
                         self.matrix_value[y][x] = self.matrix_value[y - 1][x]

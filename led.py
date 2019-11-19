@@ -8,7 +8,7 @@ LED_WIDTH = 8
 LED_HEIGHT = 10
 
 
-led_map = [[((LED_HEIGHT * (LED_WIDTH - 1)) - LED_HEIGHT * x + y) * 3 if not(x % 2) else ((LED_HEIGHT * (LED_WIDTH - 1) - 1) - LED_HEIGHT * (x - 1) - y) * 3 for y in range(LED_HEIGHT)] for x in range(LED_WIDTH)]
+led_map = [[((LED_HEIGHT * (LED_WIDTH - 1)) - LED_HEIGHT * x + y) * 3 if x % 2 else ((LED_HEIGHT * (LED_WIDTH - 1) - 1) - LED_HEIGHT * (x - 1) - y) * 3 for y in range(LED_HEIGHT)] for x in range(LED_WIDTH)]
 
 led_matrix = [ [(0, 0, 0)] * LED_HEIGHT for _ in range(LED_WIDTH) ]
 
