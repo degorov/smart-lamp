@@ -181,15 +181,16 @@ class Snow:
 
 class Lighters:
 
-    def __init__(self, scale):
+    def __init__(self, number, freq):
 
         self.loading_flag = True
 
-        self.scale = scale
+        self.number = number
+        self.freq = freq
 
-        self.lighters_pos = [ [0] * self.scale for _ in range(2) ]
-        self.lighters_speed = [ [0] * self.scale for _ in range(2) ]
-        self.lighters_color = [(0, 0, 0)] * self.scale
+        self.lighters_pos = [ [0] * self.number for _ in range(2) ]
+        self.lighters_speed = [ [0] * self.number for _ in range(2) ]
+        self.lighters_color = [(0, 0, 0)] * self.number
         self.loop_counter = 0
 
 
@@ -197,18 +198,18 @@ class Lighters:
 
         if self.loading_flag:
             self.loading_flag = False
-            for i in range(self.scale):
+            for i in range(self.number):
                 self.lighters_pos[0][i] = urandom.randrange(led.LED_WIDTH * 10)
                 self.lighters_pos[1][i] = urandom.randrange(led.LED_HEIGHT * 10)
                 self.lighters_speed[0][i] = urandom.randrange(-10, 10)
                 self.lighters_speed[1][i] = urandom.randrange(-10, 10)
-                self.lighters_color[i] = (ord(uos.urandom(1)), 255, 192)               # value to 255
+                self.lighters_color[i] = (ord(uos.urandom(1)), 255, 255)
 
         led.fill_solid(0, 0, 0)
 
-        self.loop_counter = (self.loop_counter + 1) % 32
+        self.loop_counter = (self.loop_counter + 1) % self.freq
 
-        for i in range(self.scale):
+        for i in range(self.number):
 
             if self.loop_counter == 0:
                 self.lighters_speed[0][i] = self.lighters_speed[0][i] + urandom.randrange(-3, 4)
