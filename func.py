@@ -9,3 +9,11 @@ def constrain(x, a, b):
         return b
     else:
         return x
+
+
+def scale8(i, scale):
+    return (i * (1 + scale)) >> 8
+
+
+def scale8_video(i, scale):
+    return ((i * scale) >> 8) + (1 if (i and scale) else 0)

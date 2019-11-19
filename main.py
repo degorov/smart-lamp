@@ -53,6 +53,7 @@ else:
 # effect = effects.Lighters(10, 32)
 effect = effects.Fire(0, 1)
 
+
 http_socket = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
 http_socket.setsockopt(usocket.SOL_SOCKET, usocket.SO_REUSEADDR, 1)
 http_socket.bind(('0.0.0.0', 80))

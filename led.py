@@ -1,5 +1,6 @@
 import machine
 import esp
+import func
 
 
 LED_PIN = machine.Pin(4, machine.Pin.OUT)
@@ -15,20 +16,13 @@ led_matrix = [ [(0, 0, 0)] * HEIGHT for _ in range(WIDTH) ]
 led_buffer = bytearray(HEIGHT * WIDTH * 3)
 
 
-def scale8(i, scale):
-    return (i * (1 + scale)) >> 8
-
-def scale8_video(i, scale):
-    return ((i * scale) >> 8) + (1 if (i and scale) else 0)
-
-
 # inputs are all in range 0-255
 # shamelessly ripped from FastLED
 def hsv_to_rainbow_rgb(hue, sat, val):
 
     offset = hue & 0x1F
     offset8 = offset << 3
-    third = scale8(offset8, 85)
+    third = func.scale8(offset8, 85)
 
     if not(hue & 0x80):
         if not(hue & 0x40):
@@ -42,7 +36,7 @@ def hsv_to_rainbow_rgb(hue, sat, val):
                 b = 0
         else:
             if not(hue & 0x20):
-                twothirds = scale8(offset8, 170)
+                twothirds = func.scale8(offset8, 170)
                 r = 171 - twothirds
                 g = 170 + third
                 b = 0
@@ -54,7 +48,7 @@ def hsv_to_rainbow_rgb(hue, sat, val):
         if not(hue & 0x40):
             if not(hue & 0x20):
                 r = 0
-                twothirds = scale8(offset8, 170)
+                twothirds = func.scale8(offset8, 170)
                 g = 171 - twothirds
                 b = 85 + twothirds
             else:
@@ -77,26 +71,26 @@ def hsv_to_rainbow_rgb(hue, sat, val):
             b = 255
             g = 255
         else:
-            if r: r = scale8(r, sat)
-            if g: g = scale8(g, sat)
-            if b: b = scale8(b, sat)
+            if r: r = func.scale8(r, sat)
+            if g: g = func.scale8(g, sat)
+            if b: b = func.scale8(b, sat)
             desat = 255 - sat
-            desat = scale8(desat, desat)
+            desat = func.scale8(desat, desat)
             brightness_floor = desat
             r = r + brightness_floor
             g = g + brightness_floor
             b = b + brightness_floor
 
     if val != 255:
-        val = scale8_video(val, val)
+        val = func.scale8_video(val, val)
         if val == 0:
             r = 0
             g = 0
             b = 0
         else:
-            if r: r = scale8(r, val)
-            if g: g = scale8(g, val)
-            if b: b = scale8(b, val)
+            if r: r = func.scale8(r, val)
+            if g: g = func.scale8(g, val)
+            if b: b = func.scale8(b, val)
 
     return r, g, b
 
