@@ -176,3 +176,61 @@ class Snow:
                 led.led_matrix[x][0] = [(94, 16, 255), (93, 25, 255), (95, 31, 253), (123, 43, 255)][urandom.randrange(4)]
             else:
                 led.led_matrix[x][0] = (0, 0, 0)
+
+# ============================================================================ #
+
+class Lighters:
+
+    def __init__(self, scale):
+
+        self.loading_flag = True
+
+        self.scale = scale
+
+        self.lighters_pos = [ [0] * self.scale for _ in range(2) ]
+        self.lighters_speed = [ [0] * self.scale for _ in range(2) ]
+        self.lighters_color = [(0, 0, 0)] * self.scale
+        self.loop_counter = 0
+
+
+    def update(self):
+
+        if self.loading_flag:
+            self.loading_flag = False
+            for i in range(self.scale):
+                self.lighters_pos[0][i] = urandom.randrange(led.LED_WIDTH * 10)
+                self.lighters_pos[1][i] = urandom.randrange(led.LED_HEIGHT * 10)
+                self.lighters_speed[0][i] = urandom.randrange(-10, 10)
+                self.lighters_speed[1][i] = urandom.randrange(-10, 10)
+                self.lighters_color[i] = (ord(uos.urandom(1)), 255, 192)               # value to 255
+
+        led.fill_solid(0, 0, 0)
+
+        self.loop_counter = (self.loop_counter + 1) % 32
+
+        for i in range(self.scale):
+
+            if self.loop_counter == 0:
+                self.lighters_speed[0][i] = self.lighters_speed[0][i] + urandom.randrange(-3, 4)
+                self.lighters_speed[1][i] = self.lighters_speed[1][i] + urandom.randrange(-3, 4)
+                self.lighters_speed[0][i] = func.constrain(self.lighters_speed[0][i], -20, 20)
+                self.lighters_speed[1][i] = func.constrain(self.lighters_speed[1][i], -20, 20)
+
+            self.lighters_pos[0][i] = self.lighters_pos[0][i] + self.lighters_speed[0][i]
+            self.lighters_pos[1][i] = self.lighters_pos[1][i] + self.lighters_speed[1][i]
+
+            if self.lighters_pos[0][i] < 0:
+                self.lighters_pos[0][i] = (led.LED_WIDTH - 1) * 10
+
+            if self.lighters_pos[0][i] >= led.LED_WIDTH * 10:
+                self.lighters_pos[0][i] = 0
+
+            if self.lighters_pos[1][i] < 0:
+                self.lighters_pos[1][i] = 0
+                self.lighters_speed[1][i] = -self.lighters_speed[1][i]
+
+            if self.lighters_pos[1][i] >= (led.LED_HEIGHT - 1) * 10:
+                self.lighters_pos[1][i] = (led.LED_HEIGHT - 1) * 10
+                self.lighters_speed[1][i] = -self.lighters_speed[1][i]
+
+            led.led_matrix[self.lighters_pos[0][i] // 10][self.lighters_pos[1][i] // 10] = self.lighters_color[i]

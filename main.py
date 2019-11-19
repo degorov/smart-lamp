@@ -49,7 +49,8 @@ else:
 # effect = effects.Matrix(40, 20)
 # effect = effects.Dawn(192)
 # effect = effects.Sparkles(8, 16)
-effect = effects.Snow(30)
+# effect = effects.Snow(30)
+effect = effects.Lighters(10)
 
 
 http_socket = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
