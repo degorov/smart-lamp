@@ -10,8 +10,8 @@ import func
 
 class AllRandom:
     def update(self):
-        for x in range(led.LED_WIDTH):
-            for y in range(led.LED_HEIGHT):
+        for x in range(led.WIDTH):
+            for y in range(led.HEIGHT):
                 led.led_matrix[x][y] = (ord(uos.urandom(1)), ord(uos.urandom(1)), ord(uos.urandom(1)))
 
 # ============================================================================ #
@@ -100,17 +100,17 @@ class Matrix:
 
     def update(self):
 
-        for x in range(led.LED_WIDTH):
-            this_color_v = led.led_matrix[x][led.LED_HEIGHT - 1][2]
+        for x in range(led.WIDTH):
+            this_color_v = led.led_matrix[x][led.HEIGHT - 1][2]
             if this_color_v == 0:
-                led.led_matrix[x][led.LED_HEIGHT - 1] = (96, 255, 255 * (urandom.randrange(self.scale) == 0))
+                led.led_matrix[x][led.HEIGHT - 1] = (96, 255, 255 * (urandom.randrange(self.scale) == 0))
             elif this_color_v < self.step:
-                led.led_matrix[x][led.LED_HEIGHT - 1] = (0, 0, 0)
+                led.led_matrix[x][led.HEIGHT - 1] = (0, 0, 0)
             else:
-                led.led_matrix[x][led.LED_HEIGHT - 1] = (96, 255, this_color_v - self.step)
+                led.led_matrix[x][led.HEIGHT - 1] = (96, 255, this_color_v - self.step)
 
-        for x in range(led.LED_WIDTH):
-            for y in range(led.LED_HEIGHT - 1):
+        for x in range(led.WIDTH):
+            for y in range(led.HEIGHT - 1):
                 led.led_matrix[x][y] = led.led_matrix[x][y + 1]
 
 # ============================================================================ #
@@ -145,13 +145,13 @@ class Sparkles:
     def update(self):
 
         for i in range(self.scale):
-            x = urandom.randrange(led.LED_WIDTH)
-            y = urandom.randrange(led.LED_HEIGHT)
+            x = urandom.randrange(led.WIDTH)
+            y = urandom.randrange(led.HEIGHT)
             if led.led_matrix[x][y][2] == 0:
                 led.led_matrix[x][y] = (ord(uos.urandom(1)), 255, 255)
 
-        for x in range(led.LED_WIDTH):
-            for y in range(led.LED_HEIGHT):
+        for x in range(led.WIDTH):
+            for y in range(led.HEIGHT):
                 this_color = led.led_matrix[x][y]
                 if this_color[2] > self.step:
                     led.led_matrix[x][y] = (this_color[0], this_color[1], this_color[2] - self.step)
@@ -167,15 +167,15 @@ class Snow:
 
     def update(self):
 
-        for x in range(led.LED_WIDTH):
-            for y in range(led.LED_HEIGHT - 1):
+        for x in range(led.WIDTH):
+            for y in range(led.HEIGHT - 1):
                 led.led_matrix[x][y] = led.led_matrix[x][y + 1]
 
-        for x in range(led.LED_WIDTH):
-            if led.led_matrix[x][led.LED_HEIGHT - 2][2] == 0 and (urandom.randrange(self.scale) == 0):
-                led.led_matrix[x][led.LED_HEIGHT - 1] = [(94, 16, 255), (93, 25, 255), (95, 31, 253), (123, 43, 255)][urandom.randrange(4)]
+        for x in range(led.WIDTH):
+            if led.led_matrix[x][led.HEIGHT - 2][2] == 0 and (urandom.randrange(self.scale) == 0):
+                led.led_matrix[x][led.HEIGHT - 1] = [(94, 16, 255), (93, 25, 255), (95, 31, 253), (123, 43, 255)][urandom.randrange(4)]
             else:
-                led.led_matrix[x][led.LED_HEIGHT - 1] = (0, 0, 0)
+                led.led_matrix[x][led.HEIGHT - 1] = (0, 0, 0)
 
 # ============================================================================ #
 
@@ -199,8 +199,8 @@ class Lighters:
         if self.loading_flag:
             self.loading_flag = False
             for i in range(self.number):
-                self.lighters_pos[0][i] = urandom.randrange(led.LED_WIDTH * 10)
-                self.lighters_pos[1][i] = urandom.randrange(led.LED_HEIGHT * 10)
+                self.lighters_pos[0][i] = urandom.randrange(led.WIDTH * 10)
+                self.lighters_pos[1][i] = urandom.randrange(led.HEIGHT * 10)
                 self.lighters_speed[0][i] = urandom.randrange(-10, 10)
                 self.lighters_speed[1][i] = urandom.randrange(-10, 10)
                 self.lighters_color[i] = (ord(uos.urandom(1)), 255, 255)
@@ -221,17 +221,17 @@ class Lighters:
             self.lighters_pos[1][i] = self.lighters_pos[1][i] + self.lighters_speed[1][i]
 
             if self.lighters_pos[0][i] < 0:
-                self.lighters_pos[0][i] = (led.LED_WIDTH - 1) * 10
+                self.lighters_pos[0][i] = (led.WIDTH - 1) * 10
 
-            if self.lighters_pos[0][i] >= led.LED_WIDTH * 10:
+            if self.lighters_pos[0][i] >= led.WIDTH * 10:
                 self.lighters_pos[0][i] = 0
 
             if self.lighters_pos[1][i] < 0:
                 self.lighters_pos[1][i] = 0
                 self.lighters_speed[1][i] = -self.lighters_speed[1][i]
 
-            if self.lighters_pos[1][i] >= (led.LED_HEIGHT - 1) * 10:
-                self.lighters_pos[1][i] = (led.LED_HEIGHT - 1) * 10
+            if self.lighters_pos[1][i] >= (led.HEIGHT - 1) * 10:
+                self.lighters_pos[1][i] = (led.HEIGHT - 1) * 10
                 self.lighters_speed[1][i] = -self.lighters_speed[1][i]
 
             led.led_matrix[self.lighters_pos[0][i] // 10][self.lighters_pos[1][i] // 10] = self.lighters_color[i]
@@ -247,7 +247,7 @@ class Fire:
         self.hue_rotation = hue_rotation
         self.sparkles = sparkles
 
-        self.line = [0] * led.LED_WIDTH
+        self.line = [0] * led.WIDTH
         self.pcnt = 0
 
         self.matrix_value = [ [0] * 8 for _ in range(8) ]
@@ -272,7 +272,7 @@ class Fire:
 
 
     def generate_line(self):
-        for x in range(led.LED_WIDTH):
+        for x in range(led.WIDTH):
             self.line[x] = urandom.randrange(64, 255)
 
 
@@ -284,19 +284,19 @@ class Fire:
 
         if self.pcnt >= 100:
 
-            for y in range(led.LED_HEIGHT - 1, 0, -1):
-                for x in range(led.LED_WIDTH):
+            for y in range(led.HEIGHT - 1, 0, -1):
+                for x in range(led.WIDTH):
                     if y <= 7:
                         self.matrix_value[y][x] = self.matrix_value[y - 1][x]
 
-            for x in range(led.LED_WIDTH):
+            for x in range(led.WIDTH):
                 self.matrix_value[0][x] = self.line[x]
 
             self.generate_line()
             self.pcnt = 0
 
-        for y in range(led.LED_HEIGHT - 1, 0, -1):
-            for x in range(0, led.LED_WIDTH):
+        for y in range(led.HEIGHT - 1, 0, -1):
+            for x in range(0, led.WIDTH):
                 if y < 8:
                     led.led_matrix[x][y] = (int(self.hue_rotation + self.hue_mask[y][x]),
                                             255,
@@ -312,7 +312,7 @@ class Fire:
                     else:
                         led.led_matrix[x][y] = (0, 0, 0)
 
-        for x in range(led.LED_WIDTH):
+        for x in range(led.WIDTH):
             led.led_matrix[x][0] = (int(self.hue_rotation + self.hue_mask[0][x]),
                                     255,
                                     int(((100.0 - self.pcnt) * self.matrix_value[0][x] + self.pcnt * self.line[x]) / 100.0))

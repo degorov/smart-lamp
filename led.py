@@ -4,15 +4,15 @@ import esp
 
 LED_PIN = machine.Pin(4, machine.Pin.OUT)
 
-LED_WIDTH = 8
-LED_HEIGHT = 10
+WIDTH = 8
+HEIGHT = 10
 
 
-led_map = [[((LED_HEIGHT * (LED_WIDTH - 1)) - LED_HEIGHT * x + y) * 3 if x % 2 else ((LED_HEIGHT * (LED_WIDTH - 1) - 1) - LED_HEIGHT * (x - 1) - y) * 3 for y in range(LED_HEIGHT)] for x in range(LED_WIDTH)]
+led_map = [[((HEIGHT * (WIDTH - 1)) - HEIGHT * x + y) * 3 if x % 2 else ((HEIGHT * (WIDTH - 1) - 1) - HEIGHT * (x - 1) - y) * 3 for y in range(HEIGHT)] for x in range(WIDTH)]
 
-led_matrix = [ [(0, 0, 0)] * LED_HEIGHT for _ in range(LED_WIDTH) ]
+led_matrix = [ [(0, 0, 0)] * HEIGHT for _ in range(WIDTH) ]
 
-led_buffer = bytearray(LED_HEIGHT * LED_WIDTH * 3)
+led_buffer = bytearray(HEIGHT * WIDTH * 3)
 
 
 def scale8(i, scale):
@@ -102,14 +102,14 @@ def hsv_to_rainbow_rgb(hue, sat, val):
 
 
 def fill_solid(h, s, v):
-    for x in range(LED_WIDTH):
-        for y in range(LED_HEIGHT):
+    for x in range(WIDTH):
+        for y in range(HEIGHT):
             led_matrix[x][y] = (h, s, v)
 
 
 def render():
-    for x in range(LED_WIDTH):
-        for y in range(LED_HEIGHT):
+    for x in range(WIDTH):
+        for y in range(HEIGHT):
             idx = led_map[x][y]
             led_buffer[idx + 1], led_buffer[idx], led_buffer[idx + 2] = hsv_to_rainbow_rgb(*led_matrix[x][y])
     esp.neopixel_write(LED_PIN, led_buffer, 1)

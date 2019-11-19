@@ -119,4 +119,4 @@ def put(glyph_key, column):
     glyph_matrix = GLYPHS[glyph_key]
     for y in range(len(glyph_matrix)):
         for x in range(len(glyph_matrix[0])):
-            led.led_matrix[x + column][y] = (0, 0, glyph_matrix[led.LED_HEIGHT - 1 - y][x] * 255)
+            led.led_matrix[x + column][y] = (0, 0, glyph_matrix[len(glyph_matrix) - 1 - y][x] * 255)
