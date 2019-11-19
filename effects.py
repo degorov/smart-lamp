@@ -157,3 +157,22 @@ class Sparkles:
                     led.led_matrix[x][y] = (this_color[0], this_color[1], this_color[2] - self.step)
                 else:
                     led.led_matrix[x][y] = (0, 0, 0)
+
+# ============================================================================ #
+
+class Snow:
+
+    def __init__(self, scale):
+        self.scale = scale
+
+    def update(self):
+
+        for x in range(led.LED_WIDTH):
+            for y in range(led.LED_HEIGHT - 1, 0, -1):
+                led.led_matrix[x][y] = led.led_matrix[x][y - 1]
+
+        for x in range(led.LED_WIDTH):
+            if led.led_matrix[x][1][2] == 0 and (urandom.randrange(self.scale) == 0):
+                led.led_matrix[x][0] = [(94, 16, 255), (93, 25, 255), (95, 31, 253), (123, 43, 255)][urandom.randrange(4)]
+            else:
+                led.led_matrix[x][0] = (0, 0, 0)
