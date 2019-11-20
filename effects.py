@@ -5,6 +5,7 @@ import encoder
 import button
 import urandom
 import func
+import math
 
 # ============================================================================ #
 
@@ -318,3 +319,21 @@ class Fire:
                                     int(((100.0 - self.pcnt) * self.matrix_value[0][x] + self.pcnt * self.line[x]) / 100.0))
 
         self.pcnt = self.pcnt + 30
+
+# ============================================================================ #
+
+class Plasma:
+
+    def __init__(self, speed):
+        self.speed = speed
+        self.counter = 0
+
+    def update(self):
+
+        self.counter = self.counter + self.speed
+
+        for x in range(led.WIDTH):
+            for y in range(led.HEIGHT):
+                hue = math.sin( self.counter + x ) + math.sin( self.counter + y / 4.5 ) + math.sin( x + y + self.counter ) + math.sin( math.sqrt( ( x + self.counter ) ** 2.0 + ( y + 1.5 * self.counter ) ** 2.0 ) / 4.0 )
+                hue = func.remap(hue, -4, 4, 0, 255)
+                led.led_matrix[x][y] = (hue, 255, 255)
