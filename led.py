@@ -5,7 +5,7 @@ import func
 
 LED_PIN = machine.Pin(4, machine.Pin.OUT)
 
-WIDTH = 8
+WIDTH = 10
 HEIGHT = 10
 
 
