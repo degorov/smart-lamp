@@ -45,14 +45,13 @@ except:
     print('No timezone config file found, setting timezone to +3')
     timezone = 3
 
+dawn_alarm = alarm.Alarm()
 
 if ntp.settime(timezone):
     print('Datetime set from NTP:', api.datetime_string())
+    dawn_alarm.reconfigure()
 else:
-    print('Could not sync time from NTP')
-
-
-alarm.reconfigure()
+    print('Could not sync time from NTP, alarms disabled as well')
 
 
 effect = effects.Void()
@@ -84,6 +83,9 @@ try:
     while True:
 
         frame_start_us = utime.ticks_us()
+
+        if dawn_alarm.check():
+            effect = effects.Dawn(192)
 
         events = http_poll.poll(0)
         for socket, event in events:
