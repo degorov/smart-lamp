@@ -7,10 +7,12 @@ class Alarm:
 
     def __init__(self):
         self.enabled = False
-        self.timestamp = 0
+        self.alarm = 0
+        self.before = 0
+        self.after = 0
 
 
-    def reconfigure(self):
+    def reconfigure(self, clean):
 
         try:
             alarm_config_file = open('cfg/alarm.cfg', 'r')
@@ -21,10 +23,10 @@ class Alarm:
             print('No alarm config file found')
 
         alarm_config_enabled = int(alarm_config[0])
+        alarm_config_repeat = [int(alarm_config[1]) >> i & 1 for i in range(6, -1, -1)]        # 0-6 mon-sun
 
-        if alarm_config_enabled:
+        if alarm_config_enabled and (clean or (1 in alarm_config_repeat)):
 
-            alarm_config_repeat = [int(alarm_config[1]) >> i & 1 for i in range(6, -1, -1)]        # 0-6 mon-sun
             alarm_config_time_h, alarm_config_time_m, alarm_config_time_s = map(int, alarm_config[2].split(':'))
             alarm_config_before = int(alarm_config[3])
             alarm_config_after = int(alarm_config[4])
@@ -34,6 +36,7 @@ class Alarm:
             current_day_of_week = current_datetime[6]
 
             alarm_timestamp = utime.mktime((current_datetime[0], current_datetime[1], current_datetime[2], alarm_config_time_h, alarm_config_time_m, alarm_config_time_s, current_datetime[6], current_datetime[7]))
+            alarm_timestamp = alarm_timestamp - alarm_config_before * 60
             alarm_shift = 0
 
             if 1 not in alarm_config_repeat:
@@ -57,18 +60,21 @@ class Alarm:
             alarm_timestamp = alarm_timestamp + alarm_shift
 
             self.enabled = True
-            self.timestamp = alarm_timestamp
-            print('Alarm set to:', api.datetime_string(utime.localtime(alarm_timestamp)))
+            self.before = alarm_timestamp
+            self.alarm = self.before + alarm_config_before * 60
+            self.after = self.alarm + alarm_config_after * 60
+            print('Alarm set to:', api.datetime_string(utime.localtime(self.alarm)))
 
         else:
             self.enabled = False
-            self.timestamp = 0
+            self.alarm = 0
+            self.before = 0
+            self.after = 0
             print('Alarm disabled in settings')
 
 
     def check(self):
-        if (utime.time() - self.timestamp) > 0:
-            self.reconfigure()
+        if self.enabled and ((utime.time() - self.before) > 0):
             return True
         else:
             return False

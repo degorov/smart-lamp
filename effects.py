@@ -6,6 +6,8 @@ import button
 import urandom
 import func
 import math
+import utime
+
 
 # ============================================================================ #
 
@@ -124,22 +126,28 @@ class Matrix:
 
 class Dawn:
 
-    def __init__(self, dawn_brightness):
-        self.dawn_brightness = dawn_brightness
-        self.dawn_position = 0
+    def __init__(self, before, alarm, after, brightness):
+        self.before = before
+        self.alarm = alarm
+        self.after = after
+        self.brightness = brightness
+        self.position = 0
 
     def update(self):
 
-        dawn_color = (func.remap(self.dawn_position, 0, 255, 10, 35),
-                      func.remap(self.dawn_position, 0, 255, 255, 170),
-                      func.remap(self.dawn_position, 0, 255, 10, self.dawn_brightness));
-
-        led.fill_solid(*dawn_color)
-
-        if self.dawn_position == 256:
-            self.dawn_position = 0
+        if utime.time() < self.alarm:
+            self.position = func.remap(utime.time(), self.before, self.alarm, 0, 255)
         else:
-            self.dawn_position += 1
+            self.position = 255
+            if utime.time() > self.after:
+                self.position = 0
+                # todo - exit dawn effect
+
+        color = (func.remap(self.position, 0, 255, 10, 35),
+                 func.remap(self.position, 0, 255, 255, 170),
+                 func.remap(self.position, 0, 255, 10, self.brightness));
+
+        led.fill_solid(*color)
 
 # ============================================================================ #
 

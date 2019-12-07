@@ -1,4 +1,2 @@
-install/
 tmp/
-*.cfg
-temp.py
+cfg/*.cfg

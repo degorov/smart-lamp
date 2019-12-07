@@ -49,20 +49,20 @@ dawn_alarm = alarm.Alarm()
 
 if ntp.settime(timezone):
     print('Datetime set from NTP:', api.datetime_string())
-    dawn_alarm.reconfigure()
+    dawn_alarm.reconfigure(True)
 else:
     print('Could not sync time from NTP, alarms disabled as well')
 
 
-effect = effects.Void()
+# effect = effects.Void()
 # effect = effects.AllRandom()
 # effect = effects.LoopNumbers(10)
 # effect = effects.AllHueLoop()
 # effect = effects.AllHueRotate()
 # effect = effects.AllHueSaturationRotate()
 # effect = effects.Matrix(40, 20)
-# effect = effects.Dawn(192)
-# effect = effects.Sparkles(8, 16)
+# effect = effects.Dawn(1, 1, 192)
+effect = effects.Sparkles(8, 16)
 # effect = effects.Snow(30)
 # effect = effects.Lighters(10, 32)
 # effect = effects.Fire(0, 1)
@@ -85,7 +85,8 @@ try:
         frame_start_us = utime.ticks_us()
 
         if dawn_alarm.check():
-            effect = effects.Dawn(192)
+            effect = effects.Dawn(dawn_alarm.before, dawn_alarm.alarm, dawn_alarm.after, 255)
+            dawn_alarm.reconfigure(False)
 
         events = http_poll.poll(0)
         for socket, event in events:
