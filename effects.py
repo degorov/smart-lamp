@@ -334,6 +334,6 @@ class Plasma:
 
         for x in range(led.WIDTH):
             for y in range(led.HEIGHT):
-                hue = math.sin( self.counter + x ) + math.sin( self.counter + y / 4.5 ) + math.sin( x + y + self.counter ) + math.sin( math.sqrt( ( x + self.counter ) ** 2.0 + ( y + 1.5 * self.counter ) ** 2.0 ) / 4.0 )
+                hue = func.sinquad( self.counter + x ) + func.sinquad( self.counter + y / 4.5 ) + func.sinquad( x + y + self.counter ) + func.sinquad( math.sqrt( ( x + self.counter ) ** 2.0 + ( y + 1.5 * self.counter ) ** 2.0 ) / 4.0 )
                 hue = func.remap(hue, -4, 4, 0, 255)
-                led.led_matrix[x][y] = (hue, 255, 255)
+                led.led_matrix[x][y] = (hue, 255, 127)
