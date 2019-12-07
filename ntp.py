@@ -3,6 +3,7 @@ import ustruct
 import machine
 import utime
 
+
 # (date(2000, 1, 1) - date(1900, 1, 1)).days * 24*60*60
 NTP_DELTA = 3155673600
 
@@ -29,10 +30,11 @@ def time():
 
 # There's currently no timezone support in MicroPython, so
 # utime.localtime() will return UTC time (as if it was .gmtime())
-def settime():
+def settime(timezone):
     t = time()
     if t == 0:
         return False
+    t = t + timezone * 3600
     tm = utime.localtime(t)
-    machine.RTC().datetime((tm[0], tm[1], tm[2], tm[6] + 1, tm[3], tm[4], tm[5], 0))
+    machine.RTC().init((tm[0], tm[1], tm[2], tm[6] + 1, tm[3], tm[4], tm[5], 0))
     return True

@@ -2,8 +2,11 @@ import utime
 import ujson
 
 
-def datetime():
-    utc = utime.localtime()
+def datetime_string(*dttuple):
+    if len(dttuple) == 0:
+        utc = utime.localtime()
+    else:
+        utc = dttuple[0]
     weekday = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][utc[6]]
     month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][utc[1] - 1]
     return "%s, %02d %s %04d %02d:%02d:%02d GMT" % (weekday, utc[2], month, utc[0], utc[3], utc[4], utc[5])

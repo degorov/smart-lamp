@@ -35,8 +35,18 @@ else:
         wifi.hotspot()
 
 
-if ntp.settime():
-    print('Datetime set from NTP:', api.datetime())
+try:
+    timezone_config_file = open('cfg/timezone.cfg', 'r')
+    timezone = int(timezone_config_file.readline().strip())
+    timezone_config_file.close()
+    print('Got timezone configuration: ' + str(timezone))
+except:
+    print('No timezone config file found, setting timezone to +3')
+    timezone = 3
+
+
+if ntp.settime(timezone):
+    print('Datetime set from NTP:', api.datetime_string())
 else:
     print('Could not sync time from NTP')
 
