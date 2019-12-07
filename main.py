@@ -8,6 +8,7 @@ import encoder
 import led
 import wifi
 import ntp
+import alarm
 import api
 import effects
 
@@ -49,6 +50,9 @@ if ntp.settime(timezone):
     print('Datetime set from NTP:', api.datetime_string())
 else:
     print('Could not sync time from NTP')
+
+
+alarm.reconfigure()
 
 
 effect = effects.Void()
