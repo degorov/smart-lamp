@@ -41,6 +41,7 @@ else:
     print('Could not sync time from NTP')
 
 
+effect = effects.Void()
 # effect = effects.AllRandom()
 # effect = effects.LoopNumbers(10)
 # effect = effects.AllHueLoop()
@@ -52,7 +53,7 @@ else:
 # effect = effects.Snow(30)
 # effect = effects.Lighters(10, 32)
 # effect = effects.Fire(0, 1)
-effect = effects.Plasma(0.1)
+# effect = effects.Plasma(0.1)
 
 
 http_socket = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)

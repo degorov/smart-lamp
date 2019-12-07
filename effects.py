@@ -9,6 +9,12 @@ import math
 
 # ============================================================================ #
 
+class Void:
+    def update(self):
+        led.fill_solid(0, 0, 0)
+
+# ============================================================================ #
+
 class AllRandom:
     def update(self):
         for x in range(led.WIDTH):
