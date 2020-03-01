@@ -80,6 +80,7 @@ http_poll.register(http_socket, uselect.POLLIN)
 
 button_previous = button.pressed()
 encoder_previous = encoder.value()
+encoder_used = False
 
 try:
     http_connections = {}; http_requests = {}; http_responses = {}
@@ -87,25 +88,33 @@ try:
 
         frame_start_us = utime.ticks_us()
 
-
         button_current = button.pressed()
         encoder_current = encoder.value()
 
-        if not button_current and button_previous:
-            print('button up')
-
         encoder_delta = encoder_current - encoder_previous
 
-        if encoder_delta != 0 and not button_current:
-            led.adjust_brightness(encoder_delta)
-            print(led.led_brightness)
+        if not button_previous and button_current:
+            encoder_used = False
+
+        if not button_current and button_previous and not encoder_used:
+            print('next effect')
+
+        if encoder_delta != 0:
+            if not button_current:
+                led.adjust_brightness(encoder_delta)
+                print(led.led_brightness)
+            else:
+                encoder_used = True
+                print('adj eff')
 
         button_previous = button_current
         encoder_previous = encoder_current
 
+
         if dawn_alarm.check():
             effect = effects.Dawn(dawn_alarm.before, dawn_alarm.alarm, dawn_alarm.after, 255)
             dawn_alarm.reconfigure(False)
+
 
         events = http_poll.poll(0)
         for socket, event in events:
@@ -135,14 +144,12 @@ try:
                 http_connections[fileno].close()
                 del http_connections[fileno]
 
+
         effect.update()
         led.render(True)
 
-        # print(encoder.value())
-        # utime.sleep_ms(100)
-
         frame_end_us = utime.ticks_us()
-        print("fps:", str(int(1000000 / utime.ticks_diff(frame_end_us, frame_start_us))))
+        # print("fps:", str(int(1000000 / utime.ticks_diff(frame_end_us, frame_start_us))))
 
 finally:
     http_poll.unregister(http_socket)

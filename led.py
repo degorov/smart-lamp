@@ -19,9 +19,10 @@ led_buffer = bytearray(HEIGHT * WIDTH * 3)
 
 led_brightness = MAX_BRIGHTNESS
 
+
 def adjust_brightness(delta):
     global led_brightness
-    led_brightness = func.constrain(led_brightness + delta, 0, MAX_BRIGHTNESS)
+    led_brightness = func.constrain(led_brightness + delta *  4, 0, MAX_BRIGHTNESS)
 
 
 # inputs are all in range 0-255
