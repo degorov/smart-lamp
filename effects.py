@@ -9,39 +9,45 @@ import math
 import utime
 
 
-current_effect = 2
+current_effect_idx = 3
+current_effect = None
+dawn_mode = False
 
-def next_effect():
 
-    global current_effect
+def next_effect(switch):
 
-    if current_effect == 10:
-        current_effect = 0
-    else:
-        current_effect += 1
+    global current_effect, current_effect_idx, dawn_mode
 
-    if current_effect == 0:
-        return Void()
-    elif current_effect == 1:
-        return AllRandom()
-    elif current_effect == 2:
-        return LoopNumbers()
-    elif current_effect == 3:
-        return AllHueLoop()
-    elif current_effect == 4:
-        return AllHueRotate()
-    elif current_effect == 5:
-        return Matrix(40, 20)
-    elif current_effect == 6:
-        return Sparkles(8, 16)
-    elif current_effect == 7:
-        return Snow(30)
-    elif current_effect == 8:
-        return Lighters(10, 8)
-    elif current_effect == 9:
-        return Fire(0, 1)
-    elif current_effect == 10:
-        return Plasma(0.1)
+    dawn_mode = False
+
+    if switch:
+        if current_effect_idx == 10:
+            current_effect_idx = 0
+        else:
+            current_effect_idx += 1
+
+    if current_effect_idx == 0:
+        current_effect = Void()
+    elif current_effect_idx == 1:
+        current_effect = AllRandom()
+    elif current_effect_idx == 2:
+        current_effect = LoopNumbers()
+    elif current_effect_idx == 3:
+        current_effect = AllHueLoop()
+    elif current_effect_idx == 4:
+        current_effect = AllHueRotate()
+    elif current_effect_idx == 5:
+        current_effect = Matrix(40, 20)
+    elif current_effect_idx == 6:
+        current_effect = Sparkles(8, 16)
+    elif current_effect_idx == 7:
+        current_effect = Snow(30)
+    elif current_effect_idx == 8:
+        current_effect = Lighters(10, 8)
+    elif current_effect_idx == 9:
+        current_effect = Fire(0, 1)
+    elif current_effect_idx == 10:
+        current_effect = Plasma(0.1)
 
 
 # ============================================================================ #
@@ -63,8 +69,8 @@ class Dawn:
         else:
             self.position = 255
             if utime.time() > self.after:
-                self.position = 0
-                # todo - exit dawn effect
+                next_effect(False)
+
 
         color = (func.remap(self.position, 0, 255, 10, 35),
                  func.remap(self.position, 0, 255, 255, 170),

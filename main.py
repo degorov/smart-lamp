@@ -53,9 +53,6 @@ if ntp.settime(timezone):
 else:
     print('Could not sync time from NTP, alarms disabled as well')
 
-# effect = effects.Dawn(1, 1, 192)
-
-effect = effects.next_effect()
 
 http_socket = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
 http_socket.setsockopt(usocket.SOL_SOCKET, usocket.SO_REUSEADDR, 1)
@@ -66,9 +63,13 @@ http_socket.setblocking(False)
 http_poll = uselect.poll()
 http_poll.register(http_socket, uselect.POLLIN)
 
+
 button_previous = button.pressed()
 encoder_previous = encoder.value()
 encoder_used = False
+
+effects.next_effect(False)
+
 
 try:
     http_connections = {}; http_requests = {}; http_responses = {}
@@ -85,21 +86,27 @@ try:
             encoder_used = False
 
         if not button_current and button_previous and not encoder_used:
-            effect = effects.next_effect()
+            if effects.dawn_mode:
+                effects.next_effect(False)
+            else:
+                effects.next_effect(True)
 
         if encoder_delta != 0:
             if not button_current:
-                led.adjust_brightness(encoder_delta)
+                if not effects.dawn_mode:
+                    led.adjust_brightness(encoder_delta)
             else:
                 encoder_used = True
-                effect.adjust(encoder_delta)
+                if not effects.dawn_mode:
+                    effects.current_effect.adjust(encoder_delta)
 
         button_previous = button_current
         encoder_previous = encoder_current
 
 
         if dawn_alarm.check():
-            effect = effects.Dawn(dawn_alarm.before, dawn_alarm.alarm, dawn_alarm.after, 255)
+            effects.dawn_mode = True
+            effects.current_effect = effects.Dawn(dawn_alarm.before, dawn_alarm.alarm, dawn_alarm.after, 255)
             dawn_alarm.reconfigure(False)
 
 
@@ -132,8 +139,12 @@ try:
                 del http_connections[fileno]
 
 
-        effect.update()
-        led.render(True)
+        effects.current_effect.update()
+        if effects.dawn_mode:
+            led.render(False)
+        else:
+            led.render(True)
+
 
         frame_end_us = utime.ticks_us()
         # print("fps:", str(int(1000000 / utime.ticks_diff(frame_end_us, frame_start_us))))
