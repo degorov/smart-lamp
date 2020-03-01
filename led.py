@@ -8,6 +8,8 @@ LED_PIN = machine.Pin(4, machine.Pin.OUT)
 WIDTH = 10
 HEIGHT = 10
 
+MAX_BRIGHTNESS = 192
+
 
 led_map = [[((HEIGHT * (WIDTH - 1)) - HEIGHT * x + y) * 3 if x % 2 else ((HEIGHT * (WIDTH - 1) - 1) - HEIGHT * (x - 1) - y) * 3 for y in range(HEIGHT)] for x in range(WIDTH)]
 
@@ -15,10 +17,19 @@ led_matrix = [ [(0, 0, 0)] * HEIGHT for _ in range(WIDTH) ]
 
 led_buffer = bytearray(HEIGHT * WIDTH * 3)
 
+led_brightness = MAX_BRIGHTNESS
+
+def adjust_brightness(delta):
+    global led_brightness
+    led_brightness = func.constrain(led_brightness + delta, 0, MAX_BRIGHTNESS)
+
 
 # inputs are all in range 0-255
 # shamelessly ripped from FastLED
-def hsv_to_rainbow_rgb(hue, sat, val):
+def hsv_to_rainbow_rgb(hue, sat, val, cap):
+
+    if cap:
+        val = func.constrain(val, 0, led_brightness)
 
     offset = hue & 0x1F
     offset8 = offset << 3
@@ -101,9 +112,9 @@ def fill_solid(h, s, v):
             led_matrix[x][y] = (h, s, v)
 
 
-def render():
+def render(cap):
     for x in range(WIDTH):
         for y in range(HEIGHT):
             idx = led_map[x][y]
-            led_buffer[idx + 1], led_buffer[idx], led_buffer[idx + 2] = hsv_to_rainbow_rgb(*led_matrix[x][y])
+            led_buffer[idx + 1], led_buffer[idx], led_buffer[idx + 2] = hsv_to_rainbow_rgb(led_matrix[x][y][0], led_matrix[x][y][1], led_matrix[x][y][2], cap)
     esp.neopixel_write(LED_PIN, led_buffer, 1)
