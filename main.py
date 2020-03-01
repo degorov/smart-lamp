@@ -53,21 +53,9 @@ if ntp.settime(timezone):
 else:
     print('Could not sync time from NTP, alarms disabled as well')
 
-
 # effect = effects.Dawn(1, 1, 192)
 
-# effect = effects.Void()
-# effect = effects.AllRandom()
-effect = effects.LoopNumbers()
-# effect = effects.AllHueLoop()
-# effect = effects.AllHueRotate()
-# effect = effects.Matrix(40, 20)
-# effect = effects.Sparkles(8, 16)
-# effect = effects.Snow(30)
-# effect = effects.Lighters(10, 8)
-# effect = effects.Fire(0, 1)
-# effect = effects.Plasma(0.1)
-
+effect = effects.next_effect()
 
 http_socket = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
 http_socket.setsockopt(usocket.SOL_SOCKET, usocket.SO_REUSEADDR, 1)
@@ -97,7 +85,7 @@ try:
             encoder_used = False
 
         if not button_current and button_previous and not encoder_used:
-            print('next effect')
+            effect = effects.next_effect()
 
         if encoder_delta != 0:
             if not button_current:

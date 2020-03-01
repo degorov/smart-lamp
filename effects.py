@@ -9,6 +9,41 @@ import math
 import utime
 
 
+current_effect = 2
+
+def next_effect():
+
+    global current_effect
+
+    if current_effect == 10:
+        current_effect = 0
+    else:
+        current_effect += 1
+
+    if current_effect == 0:
+        return Void()
+    elif current_effect == 1:
+        return AllRandom()
+    elif current_effect == 2:
+        return LoopNumbers()
+    elif current_effect == 3:
+        return AllHueLoop()
+    elif current_effect == 4:
+        return AllHueRotate()
+    elif current_effect == 5:
+        return Matrix(40, 20)
+    elif current_effect == 6:
+        return Sparkles(8, 16)
+    elif current_effect == 7:
+        return Snow(30)
+    elif current_effect == 8:
+        return Lighters(10, 8)
+    elif current_effect == 9:
+        return Fire(0, 1)
+    elif current_effect == 10:
+        return Plasma(0.1)
+
+
 # ============================================================================ #
 
 class Dawn:
@@ -71,6 +106,7 @@ class LoopNumbers:
         self.number = 0
 
     def update(self):
+        led.fill_solid(0, 0, 0)
         glyph.put(str(self.number), 0)
 
     def adjust(self, delta):
