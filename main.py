@@ -54,17 +54,17 @@ else:
     print('Could not sync time from NTP, alarms disabled as well')
 
 
+# effect = effects.Dawn(1, 1, 192)
+
 # effect = effects.Void()
 # effect = effects.AllRandom()
-# effect = effects.LoopNumbers(10)
-effect = effects.AllHueLoop()
+effect = effects.LoopNumbers()
+# effect = effects.AllHueLoop()
 # effect = effects.AllHueRotate()
-# effect = effects.AllHueSaturationRotate()
 # effect = effects.Matrix(40, 20)
-# effect = effects.Dawn(1, 1, 192)
 # effect = effects.Sparkles(8, 16)
 # effect = effects.Snow(30)
-# effect = effects.Lighters(10, 32)
+# effect = effects.Lighters(10, 8)
 # effect = effects.Fire(0, 1)
 # effect = effects.Plasma(0.1)
 
@@ -102,10 +102,9 @@ try:
         if encoder_delta != 0:
             if not button_current:
                 led.adjust_brightness(encoder_delta)
-                print(led.led_brightness)
             else:
                 encoder_used = True
-                print('adj eff')
+                effect.adjust(encoder_delta)
 
         button_previous = button_current
         encoder_previous = encoder_current

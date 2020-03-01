@@ -11,39 +11,79 @@ import utime
 
 # ============================================================================ #
 
+class Dawn:
+
+    def __init__(self, before, alarm, after, brightness):
+        self.before = before
+        self.alarm = alarm
+        self.after = after
+        self.brightness = brightness
+        self.position = 0
+
+
+    def update(self):
+
+        if utime.time() < self.alarm:
+            self.position = func.remap(utime.time(), self.before, self.alarm, 0, 255)
+        else:
+            self.position = 255
+            if utime.time() > self.after:
+                self.position = 0
+                # todo - exit dawn effect
+
+        color = (func.remap(self.position, 0, 255, 10, 35),
+                 func.remap(self.position, 0, 255, 255, 170),
+                 func.remap(self.position, 0, 255, 10, self.brightness));
+
+        led.fill_solid(*color)
+
+
+    def adjust(self, delta):
+        pass
+
+# ============================================================================ #
+
 class Void:
+
     def update(self):
         led.fill_solid(0, 0, 0)
+
+    def adjust(self, delta):
+        pass
 
 # ============================================================================ #
 
 class AllRandom:
+
     def update(self):
         for x in range(led.WIDTH):
             for y in range(led.HEIGHT):
                 led.led_matrix[x][y] = (ord(uos.urandom(1)), ord(uos.urandom(1)), ord(uos.urandom(1)))
 
+    def adjust(self, delta):
+        pass
+
 # ============================================================================ #
 
 class LoopNumbers:
-    def __init__(self, skip):
-        self.skip = skip
-        self.counter = 0
+
+    def __init__(self):
         self.number = 0
 
     def update(self):
+        glyph.put(str(self.number), 0)
 
-        if self.counter == 0:
-            glyph.put(str(self.number), 0)
+    def adjust(self, delta):
+        if delta > 0:
             if self.number == 9:
                 self.number = 0
             else:
                 self.number += 1
-
-        if self.counter == self.skip:
-            self.counter = 0
-        else:
-            self.counter += 1
+        if delta < 0:
+            if self.number == 0:
+                self.number = 9
+            else:
+                self.number -= 1
 
 # ============================================================================ #
 
@@ -61,43 +101,21 @@ class AllHueLoop:
         else:
             self.hue += 1
 
+    def adjust(self, delta):
+        pass
+
 # ============================================================================ #
 
 class AllHueRotate:
-    def update(self):
-        led.fill_solid(encoder.value() % 255, 255, 192)
-
-# ============================================================================ #
-
-class AllHueSaturationRotate:
 
     def __init__(self):
         self.hue = 0
-        self.sat = 255
-        self.encoder_mode = True
-        self.encoder_previous = 0
-        self.button_previous = False
 
     def update(self):
+        led.fill_solid(self.hue, 255, 192)
 
-        encoder_current = encoder.value()
-        button_current = button.pressed()
-
-        encoder_delta = encoder_current - self.encoder_previous
-        self.encoder_previous = encoder_current
-
-        if self.button_previous and not(button_current):
-            self.encoder_mode = not(self.encoder_mode)
-        self.button_previous = button_current
-
-        if self.encoder_mode:
-            self.hue = (self.hue + encoder_delta) % 255
-        else:
-            self.sat = max(min(self.sat + encoder_delta * 4, 255), 0)
-
-        print("hue=", self.hue, "; sat=", self.sat)
-
-        led.fill_solid(self.hue, self.sat, 127)
+    def adjust(self, delta):
+        self.hue = (self.hue + delta) % 255
 
 # ============================================================================ #
 
@@ -122,32 +140,8 @@ class Matrix:
             for y in range(led.HEIGHT - 1):
                 led.led_matrix[x][y] = led.led_matrix[x][y + 1]
 
-# ============================================================================ #
-
-class Dawn:
-
-    def __init__(self, before, alarm, after, brightness):
-        self.before = before
-        self.alarm = alarm
-        self.after = after
-        self.brightness = brightness
-        self.position = 0
-
-    def update(self):
-
-        if utime.time() < self.alarm:
-            self.position = func.remap(utime.time(), self.before, self.alarm, 0, 255)
-        else:
-            self.position = 255
-            if utime.time() > self.after:
-                self.position = 0
-                # todo - exit dawn effect
-
-        color = (func.remap(self.position, 0, 255, 10, 35),
-                 func.remap(self.position, 0, 255, 255, 170),
-                 func.remap(self.position, 0, 255, 10, self.brightness));
-
-        led.fill_solid(*color)
+    def adjust(self, delta):
+        self.scale = func.constrain(self.scale - delta * 5, 5, 150)
 
 # ============================================================================ #
 
@@ -173,6 +167,9 @@ class Sparkles:
                 else:
                     led.led_matrix[x][y] = (0, 0, 0)
 
+    def adjust(self, delta):
+        self.scale = func.constrain(self.scale + delta, 1, 32)
+
 # ============================================================================ #
 
 class Snow:
@@ -192,6 +189,9 @@ class Snow:
             else:
                 led.led_matrix[x][led.HEIGHT - 1] = (0, 0, 0)
 
+    def adjust(self, delta):
+        self.scale = func.constrain(self.scale - delta, 5, 100)
+
 # ============================================================================ #
 
 class Lighters:
@@ -203,9 +203,9 @@ class Lighters:
         self.number = number
         self.freq = freq
 
-        self.lighters_pos = [ [0] * self.number for _ in range(2) ]
-        self.lighters_speed = [ [0] * self.number for _ in range(2) ]
-        self.lighters_color = [(0, 0, 0)] * self.number
+        self.lighters_pos = [ [0] * 16 for _ in range(2) ]
+        self.lighters_speed = [ [0] * 16 for _ in range(2) ]
+        self.lighters_color = [(0, 0, 0)] * 16
         self.loop_counter = 0
 
 
@@ -250,6 +250,10 @@ class Lighters:
                 self.lighters_speed[1][i] = -self.lighters_speed[1][i]
 
             led.led_matrix[self.lighters_pos[0][i] // 10][self.lighters_pos[1][i] // 10] = self.lighters_color[i]
+
+
+    def adjust(self, delta):
+        self.number = func.constrain(self.number + delta, 1, 16)
 
 # ============================================================================ #
 
@@ -334,6 +338,13 @@ class Fire:
 
         self.pcnt = self.pcnt + 30
 
+
+    def adjust(self, delta):
+        if delta < 0:
+            self.sparkles = 0
+        if delta > 0:
+            self.sparkles = 1
+
 # ============================================================================ #
 
 class Plasma:
@@ -351,3 +362,6 @@ class Plasma:
                 hue = func.sinquad( self.counter + x ) + func.sinquad( self.counter + y / 4.5 ) + func.sinquad( x + y + self.counter ) + func.sinquad( math.sqrt( ( x + self.counter ) ** 2.0 + ( y + 1.5 * self.counter ) ** 2.0 ) / 4.0 )
                 hue = func.remap(hue, -4, 4, 0, 255)
                 led.led_matrix[x][y] = (hue, 255, 127)
+
+    def adjust(self, delta):
+        self.speed = func.constrain(self.speed + delta / 100, 0.05, 0.5)
