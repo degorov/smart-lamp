@@ -1,8 +1,6 @@
 import led
 import uos
 import glyph
-import encoder
-import button
 import urandom
 import func
 import math

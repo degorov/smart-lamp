@@ -1,5 +1,4 @@
 import utime
-import machine
 import api
 
 
