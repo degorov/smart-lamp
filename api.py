@@ -12,23 +12,25 @@ def datetime_string(*dttuple):
     return "%s, %02d %s %04d %02d:%02d:%02d GMT" % (weekday, utc[2], month, utc[0], utc[3], utc[4], utc[5])
 
 def router(request):
-    header = b'HTTP/1.0 200 OK\r\n' + datetime() + b'\r\nContent-Type: application/json\r\n\r\n'
+    header = b'HTTP/1.0 200 OK\r\n' + datetime_string() + b'\r\nContent-Type: application/json\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: POST\r\nAccess-Control-Allow-Headers: Content-Type\r\n\r\n'
     try:
         json_request = ujson.loads(request)
         action = json_request['action']
         if action == 'savewifisettings':
             return header + ujson.dumps(savewifisettings(json_request['ssid'], json_request['password']))
+        elif action == 'ping':
+            return header + ujson.dumps({"error": "OK"})
         else:
-            return b'HTTP/1.0 400 Bad Request\r\n' + datetime() + b'\r\n\r\n'
+            return header + ujson.dumps({"error": "UNKNOWN_METHOD"})
     except KeyError:
-        return b'HTTP/1.0 400 Bad Request\r\n' + datetime() + b'\r\n\r\n'
+        return header + ujson.dumps({"error": "BAD_REQUEST"})
     except ValueError:
-        return b'HTTP/1.0 404 Not Found\r\n' + datetime() + b'\r\n\r\n'
+        return header # CORS requirement
 
 
 def savewifisettings(ssid, password):
     json_response = {
-        "error": "ok",
+        "error": "OK",
         "ssid": ssid,
         "password": password
     }
