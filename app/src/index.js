@@ -5,7 +5,6 @@ import '@fontsource/roboto/700.css';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import App from './components/App';
 
-var mountNode = document.getElementById('app');
-ReactDOM.render(<App name="Lamp" />, mountNode);
+ReactDOM.render(React.createElement(App), document.getElementById('app'));
