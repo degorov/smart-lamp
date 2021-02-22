@@ -1,18 +1,22 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
-import WbIncandescentOutlinedIcon from '@material-ui/icons/WbIncandescentOutlined';
+
 import AlarmIcon from '@material-ui/icons/Alarm';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
+import WbIncandescentOutlinedIcon from '@material-ui/icons/WbIncandescentOutlined';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-    position: 'sticky',
+    maxWidth: theme.breakpoints.values.sm,
+    position: 'fixed',
     bottom: 0,
+    zIndex: 100,
   },
-});
+}));
 
 export default function BottomNav({ page, labels, onChange }) {
   const classes = useStyles();
