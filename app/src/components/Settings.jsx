@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import InputLabel from '@material-ui/core/InputLabel';
-import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
@@ -24,6 +22,8 @@ import BrightnessLowIcon from '@material-ui/icons/BrightnessLow';
 import PhonelinkRingOutlinedIcon from '@material-ui/icons/PhonelinkRingOutlined';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
+
+import Credits from './Credits';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -176,34 +176,7 @@ export default function Settings() {
           </Grid>
         </ListItem>
       </List>
-
-      <Box textAlign="center" p={2}>
-        <div>
-          <Link
-            target="_blank"
-            rel="noreferrer"
-            underline="always"
-            href="https://github.com/degorov/smart-lamp"
-          >
-            Репозиторий проекта на GitHub
-          </Link>
-        </div>
-        <div>
-          Icons made by&nbsp;
-          <Link target="_blank" rel="noreferrer" underline="always" href="https://www.freepik.com">
-            Freepik
-          </Link>
-          &nbsp;from&nbsp;
-          <Link
-            target="_blank"
-            rel="noreferrer"
-            underline="always"
-            href="https://www.flaticon.com/"
-          >
-            www.flaticon.com
-          </Link>
-        </div>
-      </Box>
+      <Credits />
     </>
   );
 }
