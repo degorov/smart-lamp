@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { hot } from 'react-hot-loader/root';
-
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { ruRU } from '@material-ui/core/locale';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Container from '@material-ui/core/Container';
 
-import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
+import Container from '@material-ui/core/Container';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 import TopBar from './TopBar';
 import BottomNav from './BottomNav';
+import Effects from './Effects';
+import Alarm from './Alarm';
+import Settings from './Settings';
 
 function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -20,7 +21,7 @@ function App() {
   const [page, setPage] = useState(0);
   const [connected, setConnected] = useState(false);
 
-  const theme = React.useMemo(
+  const theme = useMemo(
     () =>
       createMuiTheme(
         {
@@ -42,17 +43,9 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container disableGutters maxWidth="lg">
+      <Container disableGutters maxWidth="sm">
         <TopBar title={pageTitles[page]} connected={connected} />
-
-        <Box m={1}>
-          <Button variant="contained" color="primary">
-            Primary
-        </Button>
-          <Button variant="contained" color="secondary">
-            Secondary
-          </Button>
-        </Box>
+        <Box pb="56px">{page === 0 ? <Effects /> : page === 1 ? <Alarm /> : <Settings />}</Box>
         <BottomNav page={page} labels={pageTitles} onChange={setPage} />
       </Container>
     </ThemeProvider>
