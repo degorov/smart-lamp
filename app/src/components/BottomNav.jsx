@@ -18,20 +18,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function BottomNav({ page, labels, setPage }) {
+export default function BottomNav({ page, labels, connected, setPage }) {
   const classes = useStyles();
 
+  const handleChange = (event, newValue) => {
+    if (connected) setPage(newValue);
+  };
+
   return (
-    <BottomNavigation
-      value={page}
-      onChange={(event, newValue) => {
-        setPage(newValue);
-      }}
-      showLabels
-      className={classes.root}
-    >
-      <BottomNavigationAction label={labels[0]} icon={<WbIncandescentOutlinedIcon />} />
-      <BottomNavigationAction label={labels[1]} icon={<AlarmIcon />} />
+    <BottomNavigation className={classes.root} showLabels value={page} onChange={handleChange}>
+      {connected ? (
+        <BottomNavigationAction label={labels[0]} icon={<WbIncandescentOutlinedIcon />} />
+      ) : null}
+      {connected ? <BottomNavigationAction label={labels[1]} icon={<AlarmIcon />} /> : null}
       <BottomNavigationAction label={labels[2]} icon={<SettingsOutlinedIcon />} />
     </BottomNavigation>
   );
