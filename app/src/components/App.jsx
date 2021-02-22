@@ -20,6 +20,7 @@ function App() {
   const pageTitles = ['Эффекты', 'Будильник', 'Настройки'];
   const [page, setPage] = useState(0);
   const [connected, setConnected] = useState(false);
+  const [changed, setChanged] = useState(false);
 
   const theme = useMemo(
     () =>
@@ -44,9 +45,11 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container disableGutters maxWidth="sm">
-        <TopBar title={pageTitles[page]} connected={connected} />
-        <Box pb="56px">{page === 0 ? <Effects /> : page === 1 ? <Alarm /> : <Settings />}</Box>
-        <BottomNav page={page} labels={pageTitles} onChange={setPage} />
+        <TopBar title={pageTitles[page]} changed={changed} connected={connected} />
+        <Box pb="56px">
+          {page === 0 ? <Effects /> : page === 1 ? <Alarm /> : <Settings setChanged={setChanged} />}
+        </Box>
+        <BottomNav page={page} labels={pageTitles} setPage={setPage} />
       </Container>
     </ThemeProvider>
   );

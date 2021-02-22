@@ -18,14 +18,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function BottomNav({ page, labels, onChange }) {
+export default function BottomNav({ page, labels, setPage }) {
   const classes = useStyles();
 
   return (
     <BottomNavigation
       value={page}
       onChange={(event, newValue) => {
-        onChange(newValue);
+        setPage(newValue);
       }}
       showLabels
       className={classes.root}

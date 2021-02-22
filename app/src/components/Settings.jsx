@@ -34,11 +34,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Settings() {
+export default function Settings({ setChanged }) {
   const classes = useStyles();
 
+  const [ip, setIp] = useState('192.168.0.200');
+  const handleChangeIp = (event) => {
+    setIp(event.target.value);
+  };
+
   const [wifi, setWifi] = useState({
-    ip: '192.168.0.200',
     ssid: 'Smart-Lamp',
     password: '',
     showPassword: false,
@@ -46,6 +50,7 @@ export default function Settings() {
 
   const handleChangeWifi = (prop) => (event) => {
     setWifi({ ...wifi, [prop]: event.target.value });
+    setChanged(true);
   };
 
   const handleClickShowPassword = () => {
@@ -59,11 +64,13 @@ export default function Settings() {
   const [timezone, setTimezone] = useState(3);
   const handleChangeTimezone = (event) => {
     setTimezone(event.target.value);
+    setChanged(true);
   };
 
   const [brightness, setBrightness] = useState(192);
   const handleChangeBrightness = (event, newValue) => {
     setBrightness(newValue);
+    setChanged(true);
   };
 
   return (
@@ -76,8 +83,8 @@ export default function Settings() {
             label="IP-адрес лампы"
             variant="outlined"
             size="small"
-            value={wifi.ip}
-            onChange={handleChangeWifi('ip')}
+            value={ip}
+            onChange={handleChangeIp}
           />
           <ListItemSecondaryAction>
             <Button variant="contained" color="primary">
