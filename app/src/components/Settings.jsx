@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Settings({ setChanged, connected, setConnected }) {
+export default function Settings({ connected, setChanged, setConnected }) {
   const classes = useStyles();
 
   const [ip, setIp] = useState(localStorage.getItem('lamp-ip') || '192.168.0.200');
@@ -62,34 +62,29 @@ export default function Settings({ setChanged, connected, setConnected }) {
     setConnected(connected);
   };
 
-  const [wifi, setWifi] = useState({
+  const [settings, setSettings] = useState({
     ssid: 'Smart-Lamp',
     password: '',
     showPassword: false,
+    timezone: 3,
+    brightness: 192,
   });
 
-  const handleChangeWifi = (prop) => (event) => {
-    setWifi({ ...wifi, [prop]: event.target.value });
+  const handleChangeSettings = (prop) => (event) => {
+    setSettings({ ...settings, [prop]: event.target.value });
     setChanged(true);
   };
 
   const handleClickShowPassword = () => {
-    setWifi({ ...wifi, showPassword: !wifi.showPassword });
+    setSettings({ ...settings, showPassword: !settings.showPassword });
   };
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
 
-  const [timezone, setTimezone] = useState(3);
-  const handleChangeTimezone = (event) => {
-    setTimezone(event.target.value);
-    setChanged(true);
-  };
-
-  const [brightness, setBrightness] = useState(192);
   const handleChangeBrightness = (event, newValue) => {
-    setBrightness(newValue);
+    setSettings({ ...settings, brightness: newValue });
     setChanged(true);
   };
 
@@ -134,8 +129,8 @@ export default function Settings({ setChanged, connected, setConnected }) {
                 variant="outlined"
                 size="small"
                 fullWidth={true}
-                value={wifi.ssid}
-                onChange={handleChangeWifi('ssid')}
+                value={settings.ssid}
+                onChange={handleChangeSettings('ssid')}
               />
             </ListItem>
             <ListItem>
@@ -144,9 +139,9 @@ export default function Settings({ setChanged, connected, setConnected }) {
                 <OutlinedInput
                   id="password"
                   labelWidth={95}
-                  type={wifi.showPassword ? 'text' : 'password'}
-                  value={wifi.password}
-                  onChange={handleChangeWifi('password')}
+                  type={settings.showPassword ? 'text' : 'password'}
+                  value={settings.password}
+                  onChange={handleChangeSettings('password')}
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton
@@ -154,7 +149,7 @@ export default function Settings({ setChanged, connected, setConnected }) {
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
                       >
-                        {wifi.showPassword ? <Visibility /> : <VisibilityOff />}
+                        {settings.showPassword ? <Visibility /> : <VisibilityOff />}
                       </IconButton>
                     </InputAdornment>
                   }
@@ -170,8 +165,8 @@ export default function Settings({ setChanged, connected, setConnected }) {
                 variant="outlined"
                 size="small"
                 fullWidth={true}
-                value={timezone}
-                onChange={handleChangeTimezone}
+                value={settings.timezone}
+                onChange={handleChangeSettings('timezone')}
               >
                 <MenuItem value={2}>МСК−1 (калининградское время)</MenuItem>
                 <MenuItem value={3}>МСК (московское время)</MenuItem>
@@ -189,8 +184,8 @@ export default function Settings({ setChanged, connected, setConnected }) {
 
             <ListSubheader>
               Максимальная яркость:
-              <Typography component="span" color={brightness > 192 ? 'error' : 'initial'}>
-                &nbsp;{brightness}
+              <Typography component="span" color={settings.brightness > 192 ? 'error' : 'initial'}>
+                &nbsp;{settings.brightness}
               </Typography>
             </ListSubheader>
             <ListItem>
@@ -208,7 +203,7 @@ export default function Settings({ setChanged, connected, setConnected }) {
                         label: 'Предел БП',
                       },
                     ]}
-                    value={brightness}
+                    value={settings.brightness}
                     onChange={handleChangeBrightness}
                   />
                 </Grid>

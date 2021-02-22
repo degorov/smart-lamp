@@ -70,7 +70,7 @@ function App() {
           ) : page === 1 ? (
             <Alarm />
           ) : page === 2 ? (
-            <Settings setChanged={setChanged} connected={connected} setConnected={setConnected} />
+            <Settings connected={connected} setChanged={setChanged} setConnected={setConnected} />
           ) : null}
         </Box>
         <BottomNav page={page} labels={pageTitles} connected={connected} setPage={setPage} />
