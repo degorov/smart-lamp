@@ -12,7 +12,7 @@ import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 import { ConnectedContext } from './AppContexts';
-import Api from '../api';
+import { ping } from '../api';
 import TopBar from './TopBar';
 import BottomNav from './BottomNav';
 import Effects from './Effects';
@@ -23,6 +23,9 @@ const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
+  },
+  offset: {
+    paddingBottom: theme.mixins.toolbar.minHeight,
   },
 }));
 
@@ -58,13 +61,6 @@ function App() {
   const [changed, setChanged] = useState(false);
 
   useEffect(() => {
-    const lsIp = localStorage.getItem('lamp-ip');
-    if (lsIp) {
-      setIp({ address: lsIp, valid: true });
-    } else {
-      setConnected(false);
-    }
-
     window.fetchWithLoading = async (...args) => {
       setLoading(true);
       try {
@@ -76,24 +72,37 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (connected === undefined && !ip.address && page === null) {
+      const lsIp = localStorage.getItem('lamp-ip');
+      if (lsIp) {
+        setIp({ address: lsIp, valid: true });
+      } else {
+        setConnected(false);
+      }
+    }
+
     if (connected === undefined && ip.address) {
       (async () => {
-        const pong = await Api.ping(ip.address);
+        const pong = await ping(ip.address);
         if (pong) {
           localStorage.setItem('lamp-ip', ip.address);
           setConnected(true);
-          if (page === null) {
-            setPage(0);
-          }
         } else {
           setConnected(false);
         }
       })();
-    } else if (connected === false) {
+    }
+
+    if (connected === true && page === null) {
+      setPage(0);
+    }
+
+    if (connected === false && page !== 2) {
       setPage(2);
     }
+
     setChanged(false);
-  }, [ip.address, connected, page]);
+  }, [connected, ip.address, page]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -101,7 +110,7 @@ function App() {
       <Container disableGutters maxWidth="sm">
         <ConnectedContext.Provider value={connected}>
           <TopBar title={pageTitles[page]} changed={changed} />
-          <Box pb="56px">
+          <Box className={classes.offset}>
             {page === 0 ? (
               <Effects />
             ) : page === 1 ? (

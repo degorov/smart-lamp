@@ -1,3 +1,6 @@
 import { createContext } from 'react';
 
-export const ConnectedContext = createContext();
+const ConnectedContext = createContext();
+ConnectedContext.displayName = 'ConnectedContext';
+
+export { ConnectedContext };
