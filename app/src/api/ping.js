@@ -1,6 +1,6 @@
 export default async function ping(ip) {
   try {
-    const response = await fetch(`http://${ip}/`, {
+    const response = await window.fetchWithLoading(`http://${ip}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
