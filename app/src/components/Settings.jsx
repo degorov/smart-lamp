@@ -23,7 +23,6 @@ import PhonelinkRingOutlinedIcon from '@material-ui/icons/PhonelinkRingOutlined'
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
-import Api from '../api';
 import Credits from './Credits';
 
 const useStyles = makeStyles((theme) => ({
@@ -35,13 +34,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Settings({ connected, setChanged, setConnected }) {
+export default function Settings({ ip, setIp, connected, setConnected, setChanged }) {
   const classes = useStyles();
-
-  const [ip, setIp] = useState({
-    address: '',
-    valid: false,
-  });
 
   const handleChangeIp = (event) => {
     const ip = event.target.value;
@@ -50,15 +44,6 @@ export default function Settings({ connected, setChanged, setConnected }) {
     } else {
       setIp({ address: ip, valid: false });
     }
-  };
-
-  const handleConnect = async () => {
-    setConnected(false);
-    const connected = await Api.ping(ip.address);
-    if (connected) {
-      localStorage.setItem('lamp-ip', ip.address);
-    }
-    setConnected(connected);
   };
 
   const [settings, setSettings] = useState({
@@ -88,12 +73,10 @@ export default function Settings({ connected, setChanged, setConnected }) {
   };
 
   useEffect(() => {
-    setIp({ address: localStorage.getItem('lamp-ip') || '192.168.0.200', valid: true });
-
-    return () => {
-      setChanged(false);
-    };
-  }, [setChanged]);
+    if (connected) {
+      console.log('LOAD SETTINGS');
+    }
+  }, [connected]);
 
   return (
     <>
@@ -114,7 +97,9 @@ export default function Settings({ connected, setChanged, setConnected }) {
               variant="contained"
               color="primary"
               disabled={!ip.valid}
-              onClick={handleConnect}
+              onClick={() => {
+                setConnected();
+              }}
             >
               <PhonelinkRingOutlinedIcon />
             </Button>

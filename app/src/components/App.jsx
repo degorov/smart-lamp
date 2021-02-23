@@ -18,11 +18,6 @@ import Settings from './Settings';
 function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
-  const pageTitles = ['Эффекты', 'Будильник', 'Настройки'];
-  const [page, setPage] = useState(null);
-  const [connected, setConnected] = useState(false);
-  const [changed, setChanged] = useState(false);
-
   const theme = useMemo(
     () =>
       createMuiTheme(
@@ -42,22 +37,49 @@ function App() {
     [prefersDarkMode],
   );
 
+  const pageTitles = ['Эффекты', 'Будильник', 'Настройки'];
+  const [page, setPage] = useState(null);
+
+  const [changed, setChanged] = useState(false);
+
   useEffect(() => {
-    (async () => {
-      const lsIp = localStorage.getItem('lamp-ip');
-      if (lsIp) {
-        const connected = await Api.ping(lsIp);
-        if (connected) {
-          setPage(0);
-          setConnected(true);
-        } else {
-          setPage(2);
-        }
-      } else {
-        setPage(2);
-      }
-    })();
+    setChanged(false);
+  }, [page]);
+
+  const [ip, setIp] = useState({
+    address: '',
+    valid: false,
+  });
+
+  const [connected, setConnected] = useState();
+
+  useEffect(() => {
+    const lsIp = localStorage.getItem('lamp-ip');
+    if (lsIp) {
+      setIp({ address: lsIp, valid: true });
+    } else {
+      setConnected(false);
+    }
   }, []);
+
+  useEffect(() => {
+    if (connected === undefined && ip.address) {
+      (async () => {
+        const pong = await Api.ping(ip.address);
+        if (pong) {
+          localStorage.setItem('lamp-ip', ip.address);
+          setConnected(true);
+          if (page === null) {
+            setPage(0);
+          }
+        } else {
+          setConnected(false);
+        }
+      })();
+    } else if (connected === false) {
+      setPage(2);
+    }
+  }, [ip.address, connected, page]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -70,7 +92,13 @@ function App() {
           ) : page === 1 ? (
             <Alarm />
           ) : page === 2 ? (
-            <Settings connected={connected} setChanged={setChanged} setConnected={setConnected} />
+            <Settings
+              ip={ip}
+              setIp={setIp}
+              connected={connected}
+              setConnected={setConnected}
+              setChanged={setChanged}
+            />
           ) : null}
         </Box>
         <BottomNav page={page} labels={pageTitles} connected={connected} setPage={setPage} />
