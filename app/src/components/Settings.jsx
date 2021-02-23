@@ -38,26 +38,25 @@ const useStyles = makeStyles((theme) => ({
 export default function Settings({ connected, setChanged, setConnected }) {
   const classes = useStyles();
 
-  const [ip, setIp] = useState(localStorage.getItem('lamp-ip') || '192.168.0.200');
-  const [isIpValid, setIsIpValid] = useState(false);
+  const [ip, setIp] = useState({
+    address: '',
+    valid: false,
+  });
 
   const handleChangeIp = (event) => {
-    setIp(event.target.value);
-  };
-
-  useEffect(() => {
+    const ip = event.target.value;
     if (/^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/.test(ip)) {
-      setIsIpValid(true);
+      setIp({ address: ip, valid: true });
     } else {
-      setIsIpValid(false);
+      setIp({ address: ip, valid: false });
     }
-  }, [ip]);
+  };
 
   const handleConnect = async () => {
     setConnected(false);
-    const connected = await Api.ping(ip);
+    const connected = await Api.ping(ip.address);
     if (connected) {
-      localStorage.setItem('lamp-ip', ip);
+      localStorage.setItem('lamp-ip', ip.address);
     }
     setConnected(connected);
   };
@@ -88,12 +87,13 @@ export default function Settings({ connected, setChanged, setConnected }) {
     setChanged(true);
   };
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    setIp({ address: localStorage.getItem('lamp-ip') || '192.168.0.200', valid: true });
+
+    return () => {
       setChanged(false);
-    },
-    [setChanged],
-  );
+    };
+  }, [setChanged]);
 
   return (
     <>
@@ -105,15 +105,15 @@ export default function Settings({ connected, setChanged, setConnected }) {
             label="IP-адрес лампы"
             variant="outlined"
             size="small"
-            value={ip}
+            value={ip.address}
             onChange={handleChangeIp}
-            error={!isIpValid}
+            error={!ip.valid}
           />
           <ListItemSecondaryAction>
             <Button
               variant="contained"
               color="primary"
-              disabled={!isIpValid}
+              disabled={!ip.valid}
               onClick={handleConnect}
             >
               <PhonelinkRingOutlinedIcon />
