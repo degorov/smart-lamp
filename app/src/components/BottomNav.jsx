@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import BottomNavigation from '@material-ui/core/BottomNavigation';
@@ -7,6 +7,8 @@ import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import WbIncandescentOutlinedIcon from '@material-ui/icons/WbIncandescentOutlined';
+
+import { ConnectedContext } from './AppContexts';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,8 +20,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function BottomNav({ page, labels, connected, setPage }) {
+export default function BottomNav({ page, labels, setPage }) {
   const classes = useStyles();
+
+  const connected = useContext(ConnectedContext);
 
   return connected ? (
     <BottomNavigation

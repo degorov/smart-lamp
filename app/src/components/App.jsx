@@ -11,6 +11,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
+import { ConnectedContext } from './AppContexts';
 import Api from '../api';
 import TopBar from './TopBar';
 import BottomNav from './BottomNav';
@@ -98,23 +99,24 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container disableGutters maxWidth="sm">
-        <TopBar title={pageTitles[page]} changed={changed} connected={connected} />
-        <Box pb="56px">
-          {page === 0 ? (
-            <Effects />
-          ) : page === 1 ? (
-            <Alarm />
-          ) : page === 2 ? (
-            <Settings
-              ip={ip}
-              setIp={setIp}
-              connected={connected}
-              setConnected={setConnected}
-              setChanged={setChanged}
-            />
-          ) : null}
-        </Box>
-        <BottomNav page={page} labels={pageTitles} connected={connected} setPage={setPage} />
+        <ConnectedContext.Provider value={connected}>
+          <TopBar title={pageTitles[page]} changed={changed} />
+          <Box pb="56px">
+            {page === 0 ? (
+              <Effects />
+            ) : page === 1 ? (
+              <Alarm />
+            ) : page === 2 ? (
+              <Settings
+                ip={ip}
+                setIp={setIp}
+                doConnect={() => setConnected()}
+                doChange={() => setChanged(true)}
+              />
+            ) : null}
+          </Box>
+          <BottomNav page={page} labels={pageTitles} setPage={setPage} />
+        </ConnectedContext.Provider>
       </Container>
       <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress color="inherit" />

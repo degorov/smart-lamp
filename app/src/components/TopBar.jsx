@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import AppBar from '@material-ui/core/AppBar';
@@ -10,6 +10,8 @@ import SaveIcon from '@material-ui/icons/Save';
 import WifiOffOutlinedIcon from '@material-ui/icons/WifiOffOutlined';
 import WifiOutlinedIcon from '@material-ui/icons/WifiOutlined';
 
+import { ConnectedContext } from './AppContexts';
+
 const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
@@ -19,8 +21,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function TopBar({ title, changed, connected }) {
+export default function TopBar({ title, changed }) {
   const classes = useStyles();
+
+  const connected = useContext(ConnectedContext);
 
   return (
     <AppBar position="sticky">

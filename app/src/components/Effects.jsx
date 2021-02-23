@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
+
+import { ConnectedContext } from './AppContexts';
 
 export default function Effects() {
-  return <p>Эффекты</p>;
+  const connected = useContext(ConnectedContext);
+
+  return <p>Эффекты {String(connected)}</p>;
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';
@@ -23,6 +23,7 @@ import PhonelinkRingOutlinedIcon from '@material-ui/icons/PhonelinkRingOutlined'
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
+import { ConnectedContext } from './AppContexts';
 import Credits from './Credits';
 
 const useStyles = makeStyles((theme) => ({
@@ -34,8 +35,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Settings({ ip, setIp, connected, setConnected, setChanged }) {
+export default function Settings({ ip, setIp, doConnect, doChange }) {
   const classes = useStyles();
+
+  const connected = useContext(ConnectedContext);
 
   const handleChangeIp = (event) => {
     const ip = event.target.value;
@@ -56,7 +59,7 @@ export default function Settings({ ip, setIp, connected, setConnected, setChange
 
   const handleChangeSettings = (prop) => (event) => {
     setSettings({ ...settings, [prop]: event.target.value });
-    setChanged(true);
+    doChange();
   };
 
   const handleClickShowPassword = () => {
@@ -69,7 +72,7 @@ export default function Settings({ ip, setIp, connected, setConnected, setChange
 
   const handleChangeBrightness = (event, newValue) => {
     setSettings({ ...settings, brightness: newValue });
-    setChanged(true);
+    doChange();
   };
 
   useEffect(() => {
@@ -93,14 +96,7 @@ export default function Settings({ ip, setIp, connected, setConnected, setChange
             error={!ip.valid}
           />
           <ListItemSecondaryAction>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={!ip.valid}
-              onClick={() => {
-                setConnected();
-              }}
-            >
+            <Button variant="contained" color="primary" disabled={!ip.valid} onClick={doConnect}>
               <PhonelinkRingOutlinedIcon />
             </Button>
           </ListItemSecondaryAction>
