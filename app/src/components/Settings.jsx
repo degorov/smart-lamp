@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Settings({ ip, setIp, doConnect, doChange }) {
+export default function Settings({ ip, setIp, connect, setSave }) {
   const classes = useStyles();
 
   const connected = useContext(ConnectedContext);
@@ -59,7 +59,7 @@ export default function Settings({ ip, setIp, doConnect, doChange }) {
 
   const handleChangeSettings = (prop) => (event) => {
     setSettings({ ...settings, [prop]: event.target.value });
-    doChange();
+    setSave(saveSettings);
   };
 
   const handleClickShowPassword = () => {
@@ -72,14 +72,22 @@ export default function Settings({ ip, setIp, doConnect, doChange }) {
 
   const handleChangeBrightness = (event, newValue) => {
     setSettings({ ...settings, brightness: newValue });
-    doChange();
+    setSave(saveSettings);
+  };
+
+  const saveSettings = () => async () => {
+    await console.log('SAVE SETTINGS');
+    setSave(null);
   };
 
   useEffect(() => {
     if (connected) {
       console.log('LOAD SETTINGS');
     }
-  }, [connected]);
+    return () => {
+      setSave(null);
+    };
+  }, [connected, setSave]);
 
   return (
     <>
@@ -96,7 +104,7 @@ export default function Settings({ ip, setIp, doConnect, doChange }) {
             error={!ip.valid}
           />
           <ListItemSecondaryAction>
-            <Button variant="contained" color="primary" disabled={!ip.valid} onClick={doConnect}>
+            <Button variant="contained" color="primary" disabled={!ip.valid} onClick={connect}>
               <PhonelinkRingOutlinedIcon />
             </Button>
           </ListItemSecondaryAction>

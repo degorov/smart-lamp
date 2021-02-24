@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Alarm() {
+export default function Alarm({ setSave }) {
   const classes = useStyles();
 
   const connected = useContext(ConnectedContext);
@@ -51,11 +51,19 @@ export default function Alarm() {
     // https://material-ui.com/components/lists/
   };
 
+  const saveAlarm = () => async () => {
+    await console.log('SAVE ALARM');
+    setSave(null);
+  };
+
   useEffect(() => {
     if (connected) {
       console.log('LOAD ALARM');
     }
-  }, [connected]);
+    return () => {
+      setSave(null);
+    };
+  }, [connected, setSave]);
 
   return (
     <List>

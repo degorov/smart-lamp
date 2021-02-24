@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function TopBar({ title, changed }) {
+export default function TopBar({ title, save }) {
   const classes = useStyles();
 
   const connected = useContext(ConnectedContext);
@@ -32,8 +32,8 @@ export default function TopBar({ title, changed }) {
         <Typography variant="h6" className={classes.title}>
           {title}
         </Typography>
-        {changed ? (
-          <IconButton className={classes.save} color="inherit">
+        {save ? (
+          <IconButton className={classes.save} color="inherit" onClick={save}>
             <SaveIcon />
           </IconButton>
         ) : null}

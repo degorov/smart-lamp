@@ -58,7 +58,7 @@ function App() {
   const [page, setPage] = useState(null);
   const [ip, setIp] = useState({ address: '', valid: false });
   const [connected, setConnected] = useState();
-  const [changed, setChanged] = useState(false);
+  const [save, setSave] = useState(null);
 
   useEffect(() => {
     window.fetchWithLoading = async (...args) => {
@@ -100,8 +100,6 @@ function App() {
     if (connected === false && page !== 2) {
       setPage(2);
     }
-
-    setChanged(false);
   }, [connected, ip.address, page]);
 
   return (
@@ -109,19 +107,14 @@ function App() {
       <CssBaseline />
       <Container disableGutters maxWidth="sm">
         <ConnectedContext.Provider value={connected}>
-          <TopBar title={pageTitles[page]} changed={changed} />
+          <TopBar title={pageTitles[page]} save={save} />
           <Box className={classes.offset}>
             {page === 0 ? (
               <Effects />
             ) : page === 1 ? (
-              <Alarm />
+              <Alarm setSave={setSave} />
             ) : page === 2 ? (
-              <Settings
-                ip={ip}
-                setIp={setIp}
-                doConnect={() => setConnected()}
-                doChange={() => setChanged(true)}
-              />
+              <Settings ip={ip} setIp={setIp} connect={() => setConnected()} setSave={setSave} />
             ) : null}
           </Box>
           <BottomNav page={page} labels={pageTitles} setPage={setPage} />
