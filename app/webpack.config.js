@@ -91,5 +91,10 @@ module.exports = (env, argv) => {
   if (argv.hot) {
     config.output.filename = '[name].[fullhash].js';
   }
+  if (argv.mode === 'development') {
+    config.devtool = 'eval-source-map';
+  } else {
+    process.env.NODE_ENV = 'production';
+  }
   return config;
 };
