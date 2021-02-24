@@ -8,7 +8,7 @@ import AlarmIcon from '@material-ui/icons/Alarm';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import WbIncandescentOutlinedIcon from '@material-ui/icons/WbIncandescentOutlined';
 
-import { ConnectedContext } from './AppContexts';
+import { ConnectionContext } from './AppContexts';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 export default function BottomNav({ page, labels, setPage }) {
   const classes = useStyles();
 
-  const connected = useContext(ConnectedContext);
+  const [connected] = useContext(ConnectionContext);
 
   return connected ? (
     <BottomNavigation

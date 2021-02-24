@@ -23,7 +23,7 @@ import PhonelinkRingOutlinedIcon from '@material-ui/icons/PhonelinkRingOutlined'
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
-import { ConnectedContext } from './AppContexts';
+import { ConnectionContext, ApiContext } from './AppContexts';
 import Credits from './Credits';
 
 const useStyles = makeStyles((theme) => ({
@@ -35,10 +35,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Settings({ ip, setIp, connect, setSave }) {
+export default function Settings({ ip, setIp, setSave }) {
   const classes = useStyles();
 
-  const connected = useContext(ConnectedContext);
+  const [connected, setConnected] = useContext(ConnectionContext);
+  const API = useContext(ApiContext);
 
   const handleChangeIp = (event) => {
     const ip = event.target.value;
@@ -104,7 +105,12 @@ export default function Settings({ ip, setIp, connect, setSave }) {
             error={!ip.valid}
           />
           <ListItemSecondaryAction>
-            <Button variant="contained" color="primary" disabled={!ip.valid} onClick={connect}>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={!ip.valid}
+              onClick={() => setConnected()}
+            >
               <PhonelinkRingOutlinedIcon />
             </Button>
           </ListItemSecondaryAction>

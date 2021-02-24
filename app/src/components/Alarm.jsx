@@ -13,7 +13,7 @@ import TextField from '@material-ui/core/TextField';
 
 import AlarmIcon from '@material-ui/icons/Alarm';
 
-import { ConnectedContext } from './AppContexts';
+import { ConnectionContext, ApiContext } from './AppContexts';
 
 const useStyles = makeStyles((theme) => ({
   alarmField: {
@@ -29,7 +29,8 @@ const useStyles = makeStyles((theme) => ({
 export default function Alarm({ setSave }) {
   const classes = useStyles();
 
-  const connected = useContext(ConnectedContext);
+  const [connected] = useContext(ConnectionContext);
+  const API = useContext(ApiContext);
 
   const [alarm, setAlarm] = useState({
     enabled: false,
@@ -81,6 +82,8 @@ export default function Alarm({ setSave }) {
         <TextField
           id="alarm-time"
           type="time"
+          variant="outlined"
+          size="small"
           className={classes.alarmField}
           inputProps={{
             step: 300, // 5 min

@@ -10,7 +10,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import WifiOffOutlinedIcon from '@material-ui/icons/WifiOffOutlined';
 import WifiOutlinedIcon from '@material-ui/icons/WifiOutlined';
 
-import { ConnectedContext } from './AppContexts';
+import { ConnectionContext } from './AppContexts';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 export default function TopBar({ title, save }) {
   const classes = useStyles();
 
-  const connected = useContext(ConnectedContext);
+  const [connected] = useContext(ConnectionContext);
 
   return (
     <AppBar position="sticky">

@@ -11,8 +11,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
-import { ConnectedContext } from './AppContexts';
-import { ping } from '../api';
+import { ConnectionContext, ApiContext } from './AppContexts';
+
+import Api from '../api';
 import TopBar from './TopBar';
 import BottomNav from './BottomNav';
 import Effects from './Effects';
@@ -60,16 +61,7 @@ function App() {
   const [connected, setConnected] = useState();
   const [save, setSave] = useState(null);
 
-  useEffect(() => {
-    window.fetchWithLoading = async (...args) => {
-      setLoading(true);
-      try {
-        return await fetch(...args);
-      } finally {
-        setLoading(false);
-      }
-    };
-  }, []);
+  const API = useMemo(() => Api(setLoading), []);
 
   useEffect(() => {
     if (connected === undefined && !ip.address && page === null) {
@@ -83,7 +75,7 @@ function App() {
 
     if (connected === undefined && ip.address) {
       (async () => {
-        const pong = await ping(ip.address);
+        const pong = await API.ping(ip.address);
         if (pong) {
           localStorage.setItem('lamp-ip', ip.address);
           setConnected(true);
@@ -100,25 +92,27 @@ function App() {
     if (connected === false && page !== 2) {
       setPage(2);
     }
-  }, [connected, ip.address, page]);
+  }, [API, connected, ip.address, page]);
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container disableGutters maxWidth="sm">
-        <ConnectedContext.Provider value={connected}>
+        <ConnectionContext.Provider value={[connected, setConnected]}>
           <TopBar title={pageTitles[page]} save={save} />
           <Box className={classes.offset}>
-            {page === 0 ? (
-              <Effects />
-            ) : page === 1 ? (
-              <Alarm setSave={setSave} />
-            ) : page === 2 ? (
-              <Settings ip={ip} setIp={setIp} connect={() => setConnected()} setSave={setSave} />
-            ) : null}
+            <ApiContext.Provider value={API}>
+              {page === 0 ? (
+                <Effects />
+              ) : page === 1 ? (
+                <Alarm setSave={setSave} />
+              ) : page === 2 ? (
+                <Settings ip={ip} setIp={setIp} setSave={setSave} />
+              ) : null}
+            </ApiContext.Provider>
           </Box>
-          <BottomNav page={page} labels={pageTitles} setPage={setPage} />
-        </ConnectedContext.Provider>
+          <BottomNav labels={pageTitles} page={page} setPage={setPage} />
+        </ConnectionContext.Provider>
       </Container>
       <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress color="inherit" />
