@@ -54,14 +54,14 @@ else:
     print('Could not sync time from NTP, alarms disabled as well')
 
 
-http_socket = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
-http_socket.setsockopt(usocket.SOL_SOCKET, usocket.SO_REUSEADDR, 1)
-http_socket.bind(('0.0.0.0', 80))
-http_socket.listen(1)
-http_socket.setblocking(False)
+server = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
+server.setsockopt(usocket.SOL_SOCKET, usocket.SO_REUSEADDR, 1)
+server.bind(('0.0.0.0', 80))
+server.listen(1)
+server.setblocking(False)
 
-http_poll = uselect.poll()
-http_poll.register(http_socket, uselect.POLLIN)
+poll = uselect.poll()
+poll.register(server, uselect.POLLIN)
 
 
 button_previous = button.pressed()
@@ -72,7 +72,7 @@ effects.next_effect(False)
 
 
 try:
-    http_connections = {}; http_requests = {}; http_responses = {}
+    connections = {}; requests = {}; responses = {}
     while True:
 
         frame_start_us = utime.ticks_us()
@@ -110,34 +110,38 @@ try:
             dawn_alarm.reconfigure(False)
 
 
-        events = http_poll.poll(0)
+        events = poll.poll(0)
         for socket, event in events:
             fileno = socket.fileno()
-            if socket == http_socket:
-                connection, address = http_socket.accept()
+            if socket == server:
+                connection, address = server.accept()
                 connection.setblocking(False)
-                http_poll.register(connection, uselect.POLLIN)
+                poll.register(connection, uselect.POLLIN)
                 fileno = connection.fileno()
-                http_connections[fileno] = connection
-                http_requests[fileno] = b''
-                http_responses[fileno] = b''
+                connections[fileno] = connection
+                requests[fileno] = b''
+                responses[fileno] = b''
             elif event & uselect.POLLIN:
-                http_requests[fileno] += http_connections[fileno].recv(1024)
-                if http_requests[fileno].startswith(b'OPTIONS / HTTP/') or not http_requests[fileno].endswith(b'\r\n\r\n'):
-                    payload = http_requests[fileno].split(b'\r\n')[-1]
-                    http_responses[fileno] = api.router(payload)
-                    http_poll.modify(socket, uselect.POLLOUT)
+                requests[fileno] += connections[fileno].recv(1024)
+                if requests[fileno].startswith(b'OPTIONS / HTTP/') or not requests[fileno].endswith(b'\r\n\r\n'):
+                    payload = requests[fileno].split(b'\r\n')[-1]
+                    responses[fileno] = api.router(payload)
+                    poll.modify(socket, uselect.POLLOUT)
             elif event & uselect.POLLOUT:
-                byteswritten = http_connections[fileno].send(http_responses[fileno])
-                http_responses[fileno] = http_responses[fileno][byteswritten:]
-                if len(http_responses[fileno]) == 0:
-                    http_poll.modify(socket, 0)
-                    http_connections[fileno].close()
+                byteswritten = connections[fileno].send(responses[fileno])
+                responses[fileno] = responses[fileno][byteswritten:]
+                if len(responses[fileno]) == 0:
+                    poll.modify(socket, 0)
+                    connections[fileno].close()
+                    del connections[fileno]
+                    del requests[fileno]
+                    del responses[fileno]
             elif event & uselect.POLLHUP:
-                http_poll.unregister(socket)
-                http_connections[fileno].close()
-                del http_connections[fileno]
-
+                poll.unregister(socket)
+                connections[fileno].close()
+                del connections[fileno]
+                del requests[fileno]
+                del responses[fileno]
 
         effects.current_effect.update()
         if effects.dawn_mode:
@@ -150,5 +154,5 @@ try:
         # print("fps:", str(int(1000000 / utime.ticks_diff(frame_end_us, frame_start_us))))
 
 finally:
-    http_poll.unregister(http_socket)
-    http_socket.close()
+    poll.unregister(server)
+    server.close()
