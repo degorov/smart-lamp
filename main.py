@@ -123,10 +123,10 @@ try:
                 http_responses[fileno] = b''
             elif event & uselect.POLLIN:
                 http_requests[fileno] += http_connections[fileno].recv(1024)
-                if b'\n\n' in http_requests[fileno] or b'\n\r\n' in http_requests[fileno]:
+                if http_requests[fileno].startswith(b'OPTIONS / HTTP/') or not http_requests[fileno].endswith(b'\r\n\r\n'):
+                    payload = http_requests[fileno].split(b'\r\n')[-1]
+                    http_responses[fileno] = api.router(payload)
                     http_poll.modify(socket, uselect.POLLOUT)
-                    request = http_requests[fileno].decode().split('\n')[-1]
-                    http_responses[fileno] = api.router(request)
             elif event & uselect.POLLOUT:
                 byteswritten = http_connections[fileno].send(http_responses[fileno])
                 http_responses[fileno] = http_responses[fileno][byteswritten:]
