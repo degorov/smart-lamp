@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Checkbox from '@material-ui/core/Checkbox';
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Alarm({ setSave }) {
   const classes = useStyles();
 
-  const [connected] = useContext(ConnectionContext);
+  const [, setConnected] = useContext(ConnectionContext);
   const API = useContext(ApiContext);
 
   const [alarm, setAlarm] = useState({
@@ -52,19 +52,30 @@ export default function Alarm({ setSave }) {
     // https://material-ui.com/components/lists/
   };
 
+  const loadAlarm = useCallback(async () => {
+    const result = await API.ping(localStorage.getItem('lamp-ip'));
+    if (!result) {
+      setConnected(false);
+    }
+  }, [API, setConnected]);
+
   const saveAlarm = () => async () => {
-    await console.log('SAVE ALARM');
+    const result = await API.ping(localStorage.getItem('lamp-ip'));
+    if (!result) {
+      setConnected(false);
+    }
     setSave(null);
   };
 
   useEffect(() => {
-    if (connected) {
-      console.log('LOAD ALARM');
-    }
+    window.addEventListener('focus', loadAlarm);
+    loadAlarm();
+
     return () => {
+      window.removeEventListener('focus', loadAlarm);
       setSave(null);
     };
-  }, [connected, setSave]);
+  }, [loadAlarm, setSave]);
 
   return (
     <List>
@@ -86,7 +97,7 @@ export default function Alarm({ setSave }) {
           size="small"
           className={classes.alarmField}
           inputProps={{
-            step: 300, // 5 min
+            step: 300, // 5 minutes
           }}
           value={''}
           onChange={handleChangeAlarm('time')}

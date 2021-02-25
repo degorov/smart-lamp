@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 
-import { ConnectionContext } from './AppContexts';
+import { ConnectionContext, ApiContext } from './AppContexts';
 
 export default function Effects() {
-  const [connected] = useContext(ConnectionContext);
+  const [, setConnected] = useContext(ConnectionContext);
 
   // Отключен
   // Случайные пиксели
@@ -18,5 +18,5 @@ export default function Effects() {
   // Огонь
   // Плазма
 
-  return <p>Эффекты {String(connected)}</p>;
+  return <p>Эффекты</p>;
 }

@@ -30,7 +30,7 @@ export default function TopBar({ title, save }) {
     <AppBar position="sticky">
       <Toolbar>
         <Typography variant="h6" className={classes.title}>
-          {title}
+          {title || 'Светильник'}
         </Typography>
         {save ? (
           <IconButton className={classes.save} color="inherit" onClick={save}>

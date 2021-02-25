@@ -25,7 +25,7 @@ export default function BottomNav({ page, labels, setPage }) {
 
   const [connected] = useContext(ConnectionContext);
 
-  return connected ? (
+  return (
     <BottomNavigation
       className={classes.root}
       showLabels
@@ -34,9 +34,13 @@ export default function BottomNav({ page, labels, setPage }) {
         setPage(newValue);
       }}
     >
-      <BottomNavigationAction label={labels[0]} icon={<WbIncandescentOutlinedIcon />} />
-      <BottomNavigationAction label={labels[1]} icon={<AlarmIcon />} />
+      <BottomNavigationAction
+        label={labels[0]}
+        icon={<WbIncandescentOutlinedIcon />}
+        disabled={!connected}
+      />
+      <BottomNavigationAction label={labels[1]} icon={<AlarmIcon />} disabled={!connected} />
       <BottomNavigationAction label={labels[2]} icon={<SettingsOutlinedIcon />} />
     </BottomNavigation>
-  ) : null;
+  );
 }

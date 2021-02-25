@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';
@@ -76,19 +76,32 @@ export default function Settings({ ip, setIp, setSave }) {
     setSave(saveSettings);
   };
 
+  const loadSettings = useCallback(async () => {
+    if (connected) {
+      const result = await API.ping(localStorage.getItem('lamp-ip'));
+      if (!result) {
+        setConnected(false);
+      }
+    }
+  }, [API, connected, setConnected]);
+
   const saveSettings = () => async () => {
-    await console.log('SAVE SETTINGS');
+    const result = await API.ping(localStorage.getItem('lamp-ip'));
+    if (!result) {
+      setConnected(false);
+    }
     setSave(null);
   };
 
   useEffect(() => {
-    if (connected) {
-      console.log('LOAD SETTINGS');
-    }
+    window.addEventListener('focus', loadSettings);
+    loadSettings();
+
     return () => {
+      window.removeEventListener('focus', loadSettings);
       setSave(null);
     };
-  }, [connected, setSave]);
+  }, [loadSettings, setSave]);
 
   return (
     <>
