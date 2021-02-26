@@ -6,7 +6,7 @@ export default function Effects() {
   const [, setConnected] = useContext(ConnectionContext);
 
   // Отключен N
-  // Выбранный цвет  0-255
+  // Выбранный цвет  0-255 hue * 256 + 0-255 sat
   // Цвета по кругу N
   // Матрица  150-5
   // Вспышки  1-32

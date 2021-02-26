@@ -19,7 +19,7 @@ listbox.pack(side="left", fill="both", expand=True)
 canvas.pack(side="right")
 
 listbox.insert(0, 'Void')
-listbox.insert(1, 'AllHueRotate')
+listbox.insert(1, 'SelectedColor')
 listbox.insert(2, 'AllHueLoop')
 listbox.insert(3, 'Matrix')
 listbox.insert(4, 'Sparkles')
@@ -27,14 +27,16 @@ listbox.insert(5, 'Lighters')
 listbox.insert(6, 'Fire')
 listbox.insert(7, 'Plasma')
 
-def seleffect(event):
-    sel = event.widget.curselection()
-    if sel:
-        effindex = sel[0]
-    effects.current_effect_idx = effindex
+def onselect(event):
+    w = event.widget
+    try:
+        idx = int(w.curselection()[0])
+    except IndexError:
+        return
+    effects.current_effect_idx = idx
     effects.next_effect(False)
 
-listbox.bind("<<ListboxSelect>>", seleffect)
+listbox.bind("<<ListboxSelect>>", lambda e: onselect(e))
 
 def adjp():
     effects.current_effect.adjust(4)

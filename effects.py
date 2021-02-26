@@ -29,7 +29,7 @@ def next_effect(switch):
     if current_effect_idx == 0:
         current_effect = Void()
     elif current_effect_idx == 1:
-        current_effect = AllHueRotate()
+        current_effect = SelectedColor()
     elif current_effect_idx == 2:
         current_effect = AllHueLoop()
     elif current_effect_idx == 3:
@@ -58,19 +58,22 @@ class Void:
 
 # ============================================================================ #
 
-class AllHueRotate:
+class SelectedColor:
 
     def __init__(self):
         self.hue = 0
+        self.sat = 255
 
     def update(self):
-        led.fill_solid(self.hue, 255, 255)
+        led.fill_solid(self.hue, self.sat, 255)
 
     def adjust(self, delta):
-        self.hue = (self.hue + delta) % 255
+        self.hue = (self.hue + delta) % 256
+        self.sat = 255
 
     def value(self, state):
-        self.hue = state
+        self.hue = state // 256
+        self.sat = state % 256
 
 # ============================================================================ #
 
@@ -256,7 +259,7 @@ class Fire:
 
     def generate_line(self):
         for x in range(led.WIDTH):
-            self.line[x] = urandom.randrange(64, 255)
+            self.line[x] = urandom.randrange(64, 256)
 
 
     def update(self):
