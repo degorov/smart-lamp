@@ -1,41 +1,30 @@
-from machine import Pin
-from machine import Timer
+from machine import Pin, Timer
 
 ENCODER_PIN_CLK = 32
 ENCODER_PIN_DT = 33
 
-class Encoder:
-    encoder_clk_prev = False
-    i = 0
+clk = Pin(ENCODER_PIN_CLK, Pin.IN, Pin.PULL_UP)
+dt = Pin(ENCODER_PIN_DT, Pin.IN, Pin.PULL_UP)
 
-    def __init__(self, clk_pin, dt_pin):
-        self.clk = Pin(clk_pin, Pin.IN, Pin.PULL_UP)
-        self.dt = Pin(dt_pin, Pin.IN, Pin.PULL_UP)
+value = 0
+encoder_clk_prev = 0
 
-        tim = Timer(-1)
-        tim.init(
-            period=1,
-            mode=Timer.PERIODIC,
-            callback=self.update
-        )
+def update(p):
+    global encoder_clk_prev, value
 
-    def getValue(self):
-        return(self.i)
+    encoder_clk = clk.value()
+    encoder_dt = dt.value()
 
-    def update(self, p):
-        self.encoder_clk = self.clk.value()
-        self.encoder_dt = self.dt.value()
+    if not encoder_clk and encoder_clk_prev:
+        if encoder_dt:
+            value += 1
+        else:
+            value -= 1
+    encoder_clk_prev = encoder_clk
 
-        if not self.encoder_clk and self.encoder_clk_prev:
-            if self.encoder_dt:
-                self.i += 1
-            else:
-                self.i -= 1
-
-        self.encoder_clk_prev = self.encoder_clk
-
-
-encoder = Encoder(ENCODER_PIN_CLK, ENCODER_PIN_DT)
-
-def value():
-    return encoder.getValue()
+timer = Timer(-1)
+timer.init(
+    period=1,
+    mode=Timer.PERIODIC,
+    callback=update
+)

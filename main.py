@@ -68,7 +68,7 @@ poll.register(server, uselect.POLLIN)
 connections = {}; requests = {}; responses = {}
 
 button_previous = button.pressed()
-encoder_previous = encoder.value()
+encoder_previous = encoder.value
 encoder_used = False
 
 effects.next_effect(False)
@@ -78,7 +78,7 @@ frame_time_p = utime.ticks_us()
 while True:
 
     button_current = button.pressed()
-    encoder_current = encoder.value()
+    encoder_current = encoder.value
 
     encoder_delta = encoder_current - encoder_previous
 
