@@ -1,5 +1,7 @@
 from tkinter import *
+import sys
 
+sys.path.insert(0, '..')
 from led import WIDTH, HEIGHT, led_matrix, hsv_to_rainbow_rgb
 import effects
 
