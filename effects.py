@@ -1,22 +1,25 @@
+try:
+    import uos
+    import urandom
+    import utime
+except:
+    import os as uos
+    import random as urandom
+    import time as utime
+
 import led
-import uos
 import glyph
-import urandom
 import func
 import math
-import utime
 
 
 current_effect_idx = 3
 current_effect = None
-dawn_mode = False
 
 
 def next_effect(switch):
 
-    global current_effect, current_effect_idx, dawn_mode
-
-    dawn_mode = False
+    global current_effect, current_effect_idx
 
     if switch:
         if current_effect_idx == 10:
@@ -59,7 +62,6 @@ class Dawn:
         self.brightness = brightness
         self.position = 0
 
-
     def update(self):
 
         if utime.time() < self.alarm:
@@ -76,10 +78,6 @@ class Dawn:
 
         led.fill_solid(*color)
 
-
-    def adjust(self, delta):
-        pass
-
 # ============================================================================ #
 
 class Void:
@@ -90,6 +88,9 @@ class Void:
     def adjust(self, delta):
         pass
 
+    def value(self, state):
+        pass
+
 # ============================================================================ #
 
 class AllRandom:
@@ -97,9 +98,12 @@ class AllRandom:
     def update(self):
         for x in range(led.WIDTH):
             for y in range(led.HEIGHT):
-                led.led_matrix[x][y] = (ord(uos.urandom(1)), ord(uos.urandom(1)), ord(uos.urandom(1)))
+                led.led_matrix[x][y] = (ord(uos.urandom(1)), func.remap(ord(uos.urandom(1)), 0, 255, 128, 255), func.remap(ord(uos.urandom(1)), 0, 255, 192, 255))
 
     def adjust(self, delta):
+        pass
+
+    def value(self, state):
         pass
 
 # ============================================================================ #
@@ -125,6 +129,9 @@ class LoopNumbers:
             else:
                 self.number -= 1
 
+    def value(self, state):
+        self.number = state
+
 # ============================================================================ #
 
 class AllHueLoop:
@@ -134,7 +141,7 @@ class AllHueLoop:
 
     def update(self):
 
-        led.fill_solid(self.hue, 255, 192)
+        led.fill_solid(self.hue, 255, 255)
 
         if self.hue == 256:
             self.hue = 0
@@ -142,6 +149,9 @@ class AllHueLoop:
             self.hue += 1
 
     def adjust(self, delta):
+        pass
+
+    def value(self, state):
         pass
 
 # ============================================================================ #
@@ -152,10 +162,13 @@ class AllHueRotate:
         self.hue = 0
 
     def update(self):
-        led.fill_solid(self.hue, 255, 192)
+        led.fill_solid(self.hue, 255, 255)
 
     def adjust(self, delta):
         self.hue = (self.hue + delta) % 255
+
+    def value(self, state):
+        self.hue = state
 
 # ============================================================================ #
 
@@ -182,6 +195,9 @@ class Matrix:
 
     def adjust(self, delta):
         self.scale = func.constrain(self.scale - delta * 5, 5, 150)
+
+    def value(self, state):
+        self.scale = state
 
 # ============================================================================ #
 
@@ -210,6 +226,9 @@ class Sparkles:
     def adjust(self, delta):
         self.scale = func.constrain(self.scale + delta, 1, 32)
 
+    def value(self, state):
+        self.scale = state
+
 # ============================================================================ #
 
 class Snow:
@@ -231,6 +250,9 @@ class Snow:
 
     def adjust(self, delta):
         self.scale = func.constrain(self.scale - delta, 5, 100)
+
+    def value(self, state):
+        self.scale = state
 
 # ============================================================================ #
 
@@ -294,6 +316,9 @@ class Lighters:
 
     def adjust(self, delta):
         self.number = func.constrain(self.number + delta, 1, 16)
+
+    def value(self, state):
+        self.number = state
 
 # ============================================================================ #
 
@@ -385,6 +410,9 @@ class Fire:
         if delta > 0:
             self.sparkles = 1
 
+    def value(self, state):
+        self.sparkles = state
+
 # ============================================================================ #
 
 class Plasma:
@@ -401,7 +429,10 @@ class Plasma:
             for y in range(led.HEIGHT):
                 hue = func.sinquad( self.counter + x ) + func.sinquad( self.counter + y / 4.5 ) + func.sinquad( x + y + self.counter ) + func.sinquad( math.sqrt( ( x + self.counter ) ** 2.0 + ( y + 1.5 * self.counter ) ** 2.0 ) / 4.0 )
                 hue = func.remap(hue, -4, 4, 0, 255)
-                led.led_matrix[x][y] = (hue, 255, 127)
+                led.led_matrix[x][y] = (hue, 255, 255)
 
     def adjust(self, delta):
         self.speed = func.constrain(self.speed + delta / 100, 0.05, 0.5)
+
+    def value(self, state):
+        self.speed = state / 100

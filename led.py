@@ -1,9 +1,12 @@
-import machine
-import esp
+try:
+    from esp import neopixel_write
+    from machine import Pin
+    LED_PIN = Pin(4, Pin.OUT)
+except:
+    pass
+
 import func
 
-
-LED_PIN = machine.Pin(4, machine.Pin.OUT)
 
 WIDTH = 10
 HEIGHT = 10
@@ -29,8 +32,7 @@ def adjust_brightness(delta):
 # shamelessly ripped from FastLED
 def hsv_to_rainbow_rgb(hue, sat, val, cap):
 
-    if cap:
-        val = func.constrain(val, 0, led_brightness)
+    if cap: val = int(val * led_brightness / 255)
 
     offset = hue & 0x1F
     offset8 = offset << 3
@@ -118,4 +120,4 @@ def render(cap):
         for y in range(HEIGHT):
             idx = led_map[x][y]
             led_buffer[idx + 1], led_buffer[idx], led_buffer[idx + 2] = hsv_to_rainbow_rgb(led_matrix[x][y][0], led_matrix[x][y][1], led_matrix[x][y][2], cap)
-    esp.neopixel_write(LED_PIN, led_buffer, 1)
+    neopixel_write(LED_PIN, led_buffer, 1)

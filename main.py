@@ -12,6 +12,8 @@ import alarm
 import api
 import effects
 
+led.fill_solid(0, 0, 0)
+led.render(True)
 
 if button.pressed():
     try:
@@ -86,18 +88,18 @@ try:
             encoder_used = False
 
         if not button_current and button_previous and not encoder_used:
-            if effects.dawn_mode:
+            if effects.current_effect.__class__.__name__ == 'Dawn':
                 effects.next_effect(False)
             else:
                 effects.next_effect(True)
 
         if encoder_delta != 0:
             if not button_current:
-                if not effects.dawn_mode:
+                if not effects.current_effect.__class__.__name__ == 'Dawn':
                     led.adjust_brightness(encoder_delta)
             else:
                 encoder_used = True
-                if not effects.dawn_mode:
+                if not effects.current_effect.__class__.__name__ == 'Dawn':
                     effects.current_effect.adjust(encoder_delta)
 
         button_previous = button_current
@@ -105,7 +107,6 @@ try:
 
 
         if dawn_alarm.check():
-            effects.dawn_mode = True
             effects.current_effect = effects.Dawn(dawn_alarm.before, dawn_alarm.alarm, dawn_alarm.after, 255)
             dawn_alarm.reconfigure(False)
 
@@ -122,7 +123,7 @@ try:
                 requests[fileno] = b''
                 responses[fileno] = b''
             elif event & uselect.POLLIN:
-                requests[fileno] += connections[fileno].recv(1024)
+                requests[fileno] += connections[fileno].recv(512)
                 if requests[fileno].startswith(b'OPTIONS / HTTP/') or not requests[fileno].endswith(b'\r\n\r\n'):
                     payload = requests[fileno].split(b'\r\n')[-1]
                     responses[fileno] = api.router(payload)
@@ -144,7 +145,7 @@ try:
                 del responses[fileno]
 
         effects.current_effect.update()
-        if effects.dawn_mode:
+        if effects.current_effect.__class__.__name__ == 'Dawn':
             led.render(False)
         else:
             led.render(True)
