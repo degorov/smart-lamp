@@ -1,6 +1,7 @@
 import network
 import utime
 
+apmode = False
 
 def connect(config):
     wlan = network.WLAN(network.STA_IF)
@@ -22,7 +23,9 @@ def connect(config):
 
 
 def hotspot():
+    global apmode
     wlan = network.WLAN(network.AP_IF)
     wlan.config(essid='Smart-Lamp')
     wlan.active(True)
+    apmode = True
     print('Wi-Fi hotspot activated:', wlan.ifconfig())

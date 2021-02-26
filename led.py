@@ -121,3 +121,13 @@ def render(cap):
             idx = led_map[x][y]
             led_buffer[idx + 1], led_buffer[idx], led_buffer[idx + 2] = hsv_to_rainbow_rgb(led_matrix[x][y][0], led_matrix[x][y][1], led_matrix[x][y][2], cap)
     neopixel_write(LED_PIN, led_buffer, 1)
+
+
+def loading_rings(rings):
+    for x in range(WIDTH):
+        for y in range(HEIGHT):
+            if y <= rings - 1:
+                led_matrix[x][y] = (int(y * 256 / HEIGHT), 255, 255)
+            else:
+                led_matrix[x][y] = (0, 0, 0)
+    render(True)

@@ -13,8 +13,7 @@ import alarm
 import api
 import effects
 
-led.fill_solid(0, 0, 0)
-led.render(True)
+led.loading_rings(1)
 
 if button.pressed():
     try:
@@ -30,11 +29,12 @@ else:
         wifi_config = [x.strip() for x in wifi_config_file.readlines()]
         wifi_config_file.close()
         print('Got network configuration:' + str(wifi_config))
+        led.loading_rings(2)
         if wifi.connect(wifi_config):
-            pass
+            led.loading_rings(3)
         else:
-            pass
-    except:
+            raise Exception('Wi-Fi not connected')
+    except OSError:
         print('No Wi-Fi config file found')
         wifi.hotspot()
 
@@ -43,18 +43,22 @@ try:
     timezone = int(timezone_config_file.readline().strip())
     timezone_config_file.close()
     print('Got timezone configuration: ' + str(timezone))
+    led.loading_rings(4)
 except:
     print('No timezone config file found, setting timezone to +3')
     timezone = 3
 
 dawn_alarm = alarm.Alarm()
+led.loading_rings(5)
 
 if ntp.settime(timezone):
     print('Datetime set from NTP:', api.datetime_string())
+    led.loading_rings(6)
     dawn_alarm.reconfigure(True)
+    led.loading_rings(7)
 else:
-    print('Could not sync time from NTP, alarms disabled as well')
-
+    if not wifi.apmode:
+        raise Exception('NTP not synced')
 
 server = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
 server.setsockopt(usocket.SOL_SOCKET, usocket.SO_REUSEADDR, 1)
@@ -62,8 +66,12 @@ server.bind(('0.0.0.0', 80))
 server.listen(1)
 server.setblocking(False)
 
+led.loading_rings(8)
+
 poll = uselect.poll()
 poll.register(server, uselect.POLLIN)
+
+led.loading_rings(9)
 
 connections = {}; requests = {}; responses = {}
 
@@ -71,9 +79,11 @@ button_previous = button.pressed()
 encoder_previous = encoder.value
 encoder_used = False
 
+led.loading_rings(10)
+
 effects.next_effect(False)
 
-frame_time_p = utime.ticks_us()
+# frame_time_p = utime.ticks_us()
 
 while True:
 
@@ -113,9 +123,9 @@ while True:
     else:
         led.render(True)
 
-    frame_time = utime.ticks_us()
+    # frame_time = utime.ticks_us()
     # print("fps:", str(int(1000000 / utime.ticks_diff(frame_time, frame_time_p))))
-    frame_time_p = frame_time
+    # frame_time_p = frame_time
 
     gc.collect()
     # print(gc.mem_free())
