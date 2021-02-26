@@ -8,12 +8,11 @@ except:
     import time as utime
 
 import led
-import glyph
 import func
 import math
 
 
-current_effect_idx = 3
+current_effect_idx = 4
 current_effect = None
 
 
@@ -22,7 +21,7 @@ def next_effect(switch):
     global current_effect, current_effect_idx
 
     if switch:
-        if current_effect_idx == 10:
+        if current_effect_idx == 7:
             current_effect_idx = 0
         else:
             current_effect_idx += 1
@@ -30,24 +29,18 @@ def next_effect(switch):
     if current_effect_idx == 0:
         current_effect = Void()
     elif current_effect_idx == 1:
-        current_effect = AllRandom()
-    elif current_effect_idx == 2:
-        current_effect = LoopNumbers()
-    elif current_effect_idx == 3:
-        current_effect = AllHueLoop()
-    elif current_effect_idx == 4:
         current_effect = AllHueRotate()
-    elif current_effect_idx == 5:
+    elif current_effect_idx == 2:
+        current_effect = AllHueLoop()
+    elif current_effect_idx == 3:
         current_effect = Matrix(40, 20)
-    elif current_effect_idx == 6:
+    elif current_effect_idx == 4:
         current_effect = Sparkles(8, 16)
-    elif current_effect_idx == 7:
-        current_effect = Snow(30)
-    elif current_effect_idx == 8:
+    elif current_effect_idx == 5:
         current_effect = Lighters(10, 8)
-    elif current_effect_idx == 9:
+    elif current_effect_idx == 6:
         current_effect = Fire(0, 1)
-    elif current_effect_idx == 10:
+    elif current_effect_idx == 7:
         current_effect = Plasma(0.1)
 
 
@@ -93,44 +86,19 @@ class Void:
 
 # ============================================================================ #
 
-class AllRandom:
-
-    def update(self):
-        for x in range(led.WIDTH):
-            for y in range(led.HEIGHT):
-                led.led_matrix[x][y] = (ord(uos.urandom(1)), func.remap(ord(uos.urandom(1)), 0, 255, 128, 255), func.remap(ord(uos.urandom(1)), 0, 255, 192, 255))
-
-    def adjust(self, delta):
-        pass
-
-    def value(self, state):
-        pass
-
-# ============================================================================ #
-
-class LoopNumbers:
+class AllHueRotate:
 
     def __init__(self):
-        self.number = 0
+        self.hue = 0
 
     def update(self):
-        led.fill_solid(0, 0, 0)
-        glyph.put(str(self.number), 0)
+        led.fill_solid(self.hue, 255, 255)
 
     def adjust(self, delta):
-        if delta > 0:
-            if self.number == 9:
-                self.number = 0
-            else:
-                self.number += 1
-        if delta < 0:
-            if self.number == 0:
-                self.number = 9
-            else:
-                self.number -= 1
+        self.hue = (self.hue + delta) % 255
 
     def value(self, state):
-        self.number = state
+        self.hue = state
 
 # ============================================================================ #
 
@@ -153,22 +121,6 @@ class AllHueLoop:
 
     def value(self, state):
         pass
-
-# ============================================================================ #
-
-class AllHueRotate:
-
-    def __init__(self):
-        self.hue = 0
-
-    def update(self):
-        led.fill_solid(self.hue, 255, 255)
-
-    def adjust(self, delta):
-        self.hue = (self.hue + delta) % 255
-
-    def value(self, state):
-        self.hue = state
 
 # ============================================================================ #
 
@@ -225,31 +177,6 @@ class Sparkles:
 
     def adjust(self, delta):
         self.scale = func.constrain(self.scale + delta, 1, 32)
-
-    def value(self, state):
-        self.scale = state
-
-# ============================================================================ #
-
-class Snow:
-
-    def __init__(self, scale):
-        self.scale = scale
-
-    def update(self):
-
-        for x in range(led.WIDTH):
-            for y in range(led.HEIGHT - 1):
-                led.led_matrix[x][y] = led.led_matrix[x][y + 1]
-
-        for x in range(led.WIDTH):
-            if led.led_matrix[x][led.HEIGHT - 2][2] == 0 and (urandom.randrange(self.scale) == 0):
-                led.led_matrix[x][led.HEIGHT - 1] = [(94, 16, 255), (93, 25, 255), (95, 31, 253), (123, 43, 255)][urandom.randrange(4)]
-            else:
-                led.led_matrix[x][led.HEIGHT - 1] = (0, 0, 0)
-
-    def adjust(self, delta):
-        self.scale = func.constrain(self.scale - delta, 5, 100)
 
     def value(self, state):
         self.scale = state

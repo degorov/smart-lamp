@@ -1,3 +1,4 @@
+import gc
 import utime
 import uos
 import usocket
@@ -37,7 +38,6 @@ else:
         print('No Wi-Fi config file found')
         wifi.hotspot()
 
-
 try:
     timezone_config_file = open('cfg/timezone.cfg', 'r')
     timezone = int(timezone_config_file.readline().strip())
@@ -65,6 +65,7 @@ server.setblocking(False)
 poll = uselect.poll()
 poll.register(server, uselect.POLLIN)
 
+connections = {}; requests = {}; responses = {}
 
 button_previous = button.pressed()
 encoder_previous = encoder.value()
@@ -72,45 +73,54 @@ encoder_used = False
 
 effects.next_effect(False)
 
+frame_time_p = utime.ticks_us()
 
-try:
-    connections = {}; requests = {}; responses = {}
-    while True:
+while True:
 
-        frame_start_us = utime.ticks_us()
+    button_current = button.pressed()
+    encoder_current = encoder.value()
 
-        button_current = button.pressed()
-        encoder_current = encoder.value()
+    encoder_delta = encoder_current - encoder_previous
 
-        encoder_delta = encoder_current - encoder_previous
+    if not button_previous and button_current:
+        encoder_used = False
 
-        if not button_previous and button_current:
-            encoder_used = False
+    if not button_current and button_previous and not encoder_used:
+        if effects.current_effect.__class__.__name__ == 'Dawn':
+            effects.next_effect(False)
+        else:
+            effects.next_effect(True)
 
-        if not button_current and button_previous and not encoder_used:
-            if effects.current_effect.__class__.__name__ == 'Dawn':
-                effects.next_effect(False)
-            else:
-                effects.next_effect(True)
+    if encoder_delta != 0:
+        if not button_current:
+            if not effects.current_effect.__class__.__name__ == 'Dawn':
+                led.adjust_brightness(encoder_delta)
+        else:
+            encoder_used = True
+            if not effects.current_effect.__class__.__name__ == 'Dawn':
+                effects.current_effect.adjust(encoder_delta)
 
-        if encoder_delta != 0:
-            if not button_current:
-                if not effects.current_effect.__class__.__name__ == 'Dawn':
-                    led.adjust_brightness(encoder_delta)
-            else:
-                encoder_used = True
-                if not effects.current_effect.__class__.__name__ == 'Dawn':
-                    effects.current_effect.adjust(encoder_delta)
+    button_previous = button_current
+    encoder_previous = encoder_current
 
-        button_previous = button_current
-        encoder_previous = encoder_current
+    if dawn_alarm.check():
+        effects.current_effect = effects.Dawn(dawn_alarm.before, dawn_alarm.alarm, dawn_alarm.after, 255)
+        dawn_alarm.reconfigure(False)
 
+    effects.current_effect.update()
+    if effects.current_effect.__class__.__name__ == 'Dawn':
+        led.render(False)
+    else:
+        led.render(True)
 
-        if dawn_alarm.check():
-            effects.current_effect = effects.Dawn(dawn_alarm.before, dawn_alarm.alarm, dawn_alarm.after, 255)
-            dawn_alarm.reconfigure(False)
+    frame_time = utime.ticks_us()
+    # print("fps:", str(int(1000000 / utime.ticks_diff(frame_time, frame_time_p))))
+    frame_time_p = frame_time
 
+    gc.collect()
+    # print(gc.mem_free())
 
+    try:
         events = poll.poll(0)
         for socket, event in events:
             fileno = socket.fileno()
@@ -124,7 +134,7 @@ try:
                 responses[fileno] = b''
             elif event & uselect.POLLIN:
                 requests[fileno] += connections[fileno].recv(512)
-                if requests[fileno].startswith(b'OPTIONS / HTTP/') or not requests[fileno].endswith(b'\r\n\r\n'):
+                if not requests[fileno].startswith(b'POST / HTTP/') or not requests[fileno].endswith(b'\r\n\r\n'):
                     payload = requests[fileno].split(b'\r\n')[-1]
                     responses[fileno] = api.router(payload)
                     poll.modify(socket, uselect.POLLOUT)
@@ -143,17 +153,7 @@ try:
                 del connections[fileno]
                 del requests[fileno]
                 del responses[fileno]
-
-        effects.current_effect.update()
-        if effects.current_effect.__class__.__name__ == 'Dawn':
-            led.render(False)
-        else:
-            led.render(True)
-
-
-        frame_end_us = utime.ticks_us()
-        # print("fps:", str(int(1000000 / utime.ticks_diff(frame_end_us, frame_start_us))))
-
-finally:
-    poll.unregister(server)
-    server.close()
+    except Exception as e:
+        print(e)
+        poll.unregister(server)
+        server.close()
