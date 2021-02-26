@@ -1,5 +1,7 @@
 import utime
 import api
+import led
+import effects
 
 
 class Alarm:
@@ -9,7 +11,6 @@ class Alarm:
         self.alarm = 0
         self.before = 0
         self.after = 0
-
 
     def reconfigure(self, clean):
 
@@ -77,3 +78,25 @@ class Alarm:
             return True
         else:
             return False
+
+
+class Dawn:
+
+    def __init__(self, before, alarm, after):
+        self.before = before
+        self.alarm = alarm
+        self.after = after
+        self.delta = 255 / (alarm - before)
+
+    def update(self):
+
+        if utime.time() < self.alarm:
+            position = int((utime.time() - self.before) * self.delta)
+        else:
+            position = 255
+            if utime.time() > self.after:
+                effects.next_effect(False)
+                return
+
+        color = (int(position * 0.098 + 10), int(255 - position * 0.333), int(position * 0.961 + 10))
+        led.fill_solid(*color)

@@ -104,7 +104,7 @@ while True:
     encoder_previous = encoder_current
 
     if dawn_alarm.check():
-        effects.current_effect = effects.Dawn(dawn_alarm.before, dawn_alarm.alarm, dawn_alarm.after, 255)
+        effects.current_effect = alarm.Dawn(dawn_alarm.before, dawn_alarm.alarm, dawn_alarm.after)
         dawn_alarm.reconfigure(False)
 
     effects.current_effect.update()

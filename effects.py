@@ -1,11 +1,9 @@
 try:
     import uos
     import urandom
-    import utime
 except:
     import os as uos
     import random as urandom
-    import time as utime
 
 import led
 import func
@@ -19,6 +17,8 @@ current_effect = None
 def next_effect(switch):
 
     global current_effect, current_effect_idx
+
+    led.fill_solid(0, 0, 0)
 
     if switch:
         if current_effect_idx == 7:
@@ -42,34 +42,6 @@ def next_effect(switch):
         current_effect = Fire(0, 1)
     elif current_effect_idx == 7:
         current_effect = Plasma(0.1)
-
-
-# ============================================================================ #
-
-class Dawn:
-
-    def __init__(self, before, alarm, after, brightness):
-        self.before = before
-        self.alarm = alarm
-        self.after = after
-        self.brightness = brightness
-        self.position = 0
-
-    def update(self):
-
-        if utime.time() < self.alarm:
-            self.position = func.remap(utime.time(), self.before, self.alarm, 0, 255)
-        else:
-            self.position = 255
-            if utime.time() > self.after:
-                next_effect(False)
-
-
-        color = (func.remap(self.position, 0, 255, 10, 35),
-                 func.remap(self.position, 0, 255, 255, 170),
-                 func.remap(self.position, 0, 255, 10, self.brightness));
-
-        led.fill_solid(*color)
 
 # ============================================================================ #
 
