@@ -15,11 +15,18 @@ import effects
 
 led.loading_rings(1)
 
+try:
+    uos.mkdir('cfg')
+except OSError:
+    pass
+
 if button.pressed():
-    try:
-        uos.remove('cfg/wifi.cfg')
-    except:
-        pass
+    try: uos.remove('cfg/timezone.cfg')
+    except: pass
+    try: uos.remove('cfg/alarm.cfg')
+    except: pass
+    try: uos.remove('cfg/wifi.cfg')
+    except: pass
     finally:
         print('Wi-Fi configuration reset')
         wifi.hotspot()
@@ -43,22 +50,27 @@ try:
     timezone = int(timezone_config_file.readline().strip())
     timezone_config_file.close()
     print('Got timezone configuration: ' + str(timezone))
-    led.loading_rings(4)
 except:
-    print('No timezone config file found, setting timezone to +3')
+    timezone_config_file = open('cfg/timezone.cfg', 'w')
     timezone = 3
+    timezone_config_file.write(str(timezone))
+    timezone_config_file.close()
+    print('No timezone config file found, setting timezone to +3')
+finally:
+    led.loading_rings(4)
 
 dawn_alarm = alarm.Alarm()
 led.loading_rings(5)
 
 if ntp.settime(timezone):
     print('Datetime set from NTP:', api.datetime_string())
-    led.loading_rings(6)
-    dawn_alarm.reconfigure(True)
-    led.loading_rings(7)
 else:
     if not wifi.apmode:
         raise Exception('NTP not synced')
+
+led.loading_rings(6)
+dawn_alarm.reconfigure(True)
+led.loading_rings(7)
 
 server = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
 server.setsockopt(usocket.SOL_SOCKET, usocket.SO_REUSEADDR, 1)
@@ -80,8 +92,10 @@ encoder_previous = encoder.value
 encoder_used = False
 
 led.loading_rings(10)
-
+utime.sleep(1)
 effects.next_effect(False)
+led.render(True)
+utime.sleep(1)
 
 # frame_time_p = utime.ticks_us()
 

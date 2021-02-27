@@ -20,7 +20,11 @@ class Alarm:
             alarm_config_file.close()
             print('Got alarm configuration:', alarm_config)
         except:
-            print('No alarm config file found')
+            alarm_config_file = open('cfg/alarm.cfg', 'w')
+            alarm_config = ['0', '124', '07:45:00', '30', '15']
+            alarm_config_file.write('\n'.join(alarm_config))
+            alarm_config_file.close()
+            print('No alarm config file found, setting defaults')
 
         alarm_config_enabled = int(alarm_config[0])
         alarm_config_repeat = [int(alarm_config[1]) >> i & 1 for i in range(6, -1, -1)]        # 0-6 mon-sun
