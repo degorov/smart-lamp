@@ -123,7 +123,8 @@ def render(cap):
     neopixel_write(LED_PIN, led_buffer, 1)
 
 
-def loading_rings(rings):
+def loading_rings(progress):
+    rings = progress * HEIGHT // 100
     for x in range(WIDTH):
         for y in range(HEIGHT):
             if y <= rings - 1:

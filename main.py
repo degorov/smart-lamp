@@ -1,4 +1,3 @@
-import gc
 import utime
 import uos
 import usocket
@@ -13,12 +12,11 @@ import alarm
 import api
 import effects
 
-led.loading_rings(1)
+led.loading_rings(10)
 
-try:
-    uos.mkdir('cfg')
-except OSError:
-    pass
+try: uos.mkdir('cfg')
+except OSError: pass
+finally: led.loading_rings(20)
 
 if button.pressed():
     try: uos.remove('cfg/timezone.cfg')
@@ -36,9 +34,9 @@ else:
         wifi_config = [x.strip() for x in wifi_config_file.readlines()]
         wifi_config_file.close()
         print('Got network configuration:' + str(wifi_config))
-        led.loading_rings(2)
+        led.loading_rings(30)
         if wifi.connect(wifi_config):
-            led.loading_rings(3)
+            led.loading_rings(40)
         else:
             raise Exception('Wi-Fi not connected')
     except OSError:
@@ -57,10 +55,10 @@ except:
     timezone_config_file.close()
     print('No timezone config file found, setting timezone to +3')
 finally:
-    led.loading_rings(4)
+    led.loading_rings(50)
 
 dawn_alarm = alarm.Alarm()
-led.loading_rings(5)
+led.loading_rings(60)
 
 if ntp.settime(timezone):
     print('Datetime set from NTP:', api.datetime_string())
@@ -68,30 +66,36 @@ else:
     if not wifi.apmode:
         raise Exception('NTP not synced')
 
-led.loading_rings(6)
+led.loading_rings(70)
 dawn_alarm.reconfigure(True)
-led.loading_rings(7)
+led.loading_rings(80)
 
-server = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
-server.setsockopt(usocket.SOL_SOCKET, usocket.SO_REUSEADDR, 1)
-server.bind(('0.0.0.0', 80))
-server.listen(1)
-server.setblocking(False)
 
-led.loading_rings(8)
+def httpserver():
 
-poll = uselect.poll()
-poll.register(server, uselect.POLLIN)
+    global connections, requests, responses, server, poll
+    connections = {}; requests = {}; responses = {}
 
-led.loading_rings(9)
+    server = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
+    server.setsockopt(usocket.SOL_SOCKET, usocket.SO_REUSEADDR, 1)
+    server.bind(('0.0.0.0', 80))
+    server.listen(1)
+    server.setblocking(False)
 
-connections = {}; requests = {}; responses = {}
+    poll = uselect.poll()
+    poll.register(server, uselect.POLLIN)
+
+    print('Started HTTP server')
+
+
+httpserver()
+led.loading_rings(90)
 
 button_previous = button.pressed()
 encoder_previous = encoder.value
 encoder_used = False
 
-led.loading_rings(10)
+led.loading_rings(100)
 utime.sleep(1)
 effects.next_effect(False)
 led.render(True)
@@ -141,9 +145,6 @@ while True:
     # print("fps:", str(int(1000000 / utime.ticks_diff(frame_time, frame_time_p))))
     # frame_time_p = frame_time
 
-    gc.collect()
-    # print(gc.mem_free())
-
     try:
         events = poll.poll(0)
         for socket, event in events:
@@ -157,7 +158,7 @@ while True:
                 requests[fileno] = b''
                 responses[fileno] = b''
             elif event & uselect.POLLIN:
-                requests[fileno] += connections[fileno].recv(512)
+                requests[fileno] += connections[fileno].recv(768)
                 if not requests[fileno].startswith(b'POST / HTTP/') or not requests[fileno].endswith(b'\r\n\r\n'):
                     payload = requests[fileno].split(b'\r\n')[-1]
                     responses[fileno] = api.router(payload)
@@ -181,3 +182,4 @@ while True:
         print(e)
         poll.unregister(server)
         server.close()
+        httpserver()
