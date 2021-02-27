@@ -60,6 +60,7 @@ export default function Alarm({ setSave }) {
   }, [API, setConnected]);
 
   const saveAlarm = () => async () => {
+    // dawn_alarm.reconfigure(True)
     const result = await API.ping(localStorage.getItem('lamp-ip'));
     if (!result) {
       setConnected(false);

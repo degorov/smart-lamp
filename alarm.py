@@ -12,7 +12,7 @@ class Alarm:
         self.before = 0
         self.after = 0
 
-    def reconfigure(self, clean):
+    def reconfigure(self, apply):
 
         try:
             alarm_config_file = open('cfg/alarm.cfg', 'r')
@@ -29,7 +29,7 @@ class Alarm:
         alarm_config_enabled = int(alarm_config[0])
         alarm_config_repeat = [int(alarm_config[1]) >> i & 1 for i in range(6, -1, -1)]        # 0-6 mon-sun
 
-        if alarm_config_enabled and (clean or (1 in alarm_config_repeat)):
+        if alarm_config_enabled and (apply or (1 in alarm_config_repeat)):
 
             alarm_config_time_h, alarm_config_time_m, alarm_config_time_s = map(int, alarm_config[2].split(':'))
             alarm_config_before = int(alarm_config[3])
@@ -74,7 +74,14 @@ class Alarm:
             self.alarm = 0
             self.before = 0
             self.after = 0
-            print('Alarm disabled')
+            if alarm_config_enabled:
+                alarm_config_file = open('cfg/alarm.cfg', 'w')
+                alarm_config[0] = '0'
+                alarm_config_file.write('\n'.join(alarm_config))
+                alarm_config_file.close()
+                print('Alarm disabled after dawn')
+            else:
+                print('Alarm disabled in settings')
 
 
     def check(self):
