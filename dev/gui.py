@@ -21,11 +21,13 @@ canvas.pack(side="right")
 listbox.insert(0, 'Void')
 listbox.insert(1, 'SelectedColor')
 listbox.insert(2, 'AllHueLoop')
-listbox.insert(3, 'Matrix')
-listbox.insert(4, 'Sparkles')
-listbox.insert(5, 'Lighters')
-listbox.insert(6, 'Fire')
-listbox.insert(7, 'Plasma')
+listbox.insert(3, 'VerticalRainbow')
+listbox.insert(4, 'HorizontalRainbow')
+listbox.insert(5, 'Matrix')
+listbox.insert(6, 'Sparkles')
+listbox.insert(7, 'Lighters')
+listbox.insert(8, 'Fire')
+listbox.insert(9, 'Plasma')
 
 def onselect(event):
     w = event.widget

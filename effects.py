@@ -18,7 +18,7 @@ def constrain(x, a, b):
         return x
 
 
-current_effect_idx = 4
+current_effect_idx = 3
 current_effect = None
 
 
@@ -29,7 +29,7 @@ def next_effect(switch):
     led.fill_solid(0, 0, 0)
 
     if switch:
-        if current_effect_idx == 7:
+        if current_effect_idx == 9:
             current_effect_idx = 0
         else:
             current_effect_idx += 1
@@ -41,14 +41,18 @@ def next_effect(switch):
     elif current_effect_idx == 2:
         current_effect = AllHueLoop()
     elif current_effect_idx == 3:
-        current_effect = Matrix(40, 20)
+        current_effect = VerticalRainbow(4)
     elif current_effect_idx == 4:
-        current_effect = Sparkles(8, 16)
+        current_effect = HorizontalRainbow(4)
     elif current_effect_idx == 5:
-        current_effect = Lighters(10, 8)
+        current_effect = Matrix(40, 20)
     elif current_effect_idx == 6:
-        current_effect = Fire(0, 1)
+        current_effect = Sparkles(4, 16)
     elif current_effect_idx == 7:
+        current_effect = Lighters(5, 8)
+    elif current_effect_idx == 8:
+        current_effect = Fire(0, 1)
+    elif current_effect_idx == 9:
         current_effect = Plasma(0.1)
 
 # ============================================================================ #
@@ -104,6 +108,46 @@ class AllHueLoop:
 
     def value(self, state):
         pass
+
+# ============================================================================ #
+
+class VerticalRainbow:
+
+    def __init__(self, speed):
+        self.position = 0
+        self.speed = speed
+
+    def update(self):
+        self.position = (self.position + self.speed) % 256
+        for x in range(led.WIDTH):
+            for y in range(led.HEIGHT):
+                led.led_matrix[x][y] = (int(y * 256 / led.HEIGHT) - self.position, 255, 255)
+
+    def adjust(self, delta):
+        self.speed = constrain(self.speed + delta, -16, 16)
+
+    def value(self, state):
+        self.speed = state - 16
+
+# ============================================================================ #
+
+class HorizontalRainbow:
+
+    def __init__(self, speed):
+        self.position = 0
+        self.speed = speed
+
+    def update(self):
+        self.position = (self.position + self.speed) % 256
+        for x in range(led.WIDTH):
+            for y in range(led.HEIGHT):
+                led.led_matrix[x][y] = (int(x * 256 / led.WIDTH) - self.position, 255, 255)
+
+    def adjust(self, delta):
+        self.speed = constrain(self.speed + delta, -16, 16)
+
+    def value(self, state):
+        self.speed = state - 16
 
 # ============================================================================ #
 
@@ -188,8 +232,8 @@ class Lighters:
             for i in range(self.number):
                 self.lighters_pos[0][i] = urandom.randrange(led.WIDTH * 10)
                 self.lighters_pos[1][i] = urandom.randrange(led.HEIGHT * 10)
-                self.lighters_speed[0][i] = urandom.randrange(-10, 10)
-                self.lighters_speed[1][i] = urandom.randrange(-10, 10)
+                self.lighters_speed[0][i] = urandom.randrange(-5, 6)
+                self.lighters_speed[1][i] = urandom.randrange(-6, 6)
                 self.lighters_color[i] = (ord(uos.urandom(1)), 255, 255)
 
         led.fill_solid(0, 0, 0)
@@ -199,10 +243,10 @@ class Lighters:
         for i in range(self.number):
 
             if self.loop_counter == 0:
-                self.lighters_speed[0][i] = self.lighters_speed[0][i] + urandom.randrange(-3, 4)
-                self.lighters_speed[1][i] = self.lighters_speed[1][i] + urandom.randrange(-3, 4)
-                self.lighters_speed[0][i] = constrain(self.lighters_speed[0][i], -20, 20)
-                self.lighters_speed[1][i] = constrain(self.lighters_speed[1][i], -20, 20)
+                self.lighters_speed[0][i] = self.lighters_speed[0][i] + urandom.randrange(-1, 2)
+                self.lighters_speed[1][i] = self.lighters_speed[1][i] + urandom.randrange(-1, 2)
+                self.lighters_speed[0][i] = constrain(self.lighters_speed[0][i], -10, 10)
+                self.lighters_speed[1][i] = constrain(self.lighters_speed[1][i], -10, 10)
 
             self.lighters_pos[0][i] = self.lighters_pos[0][i] + self.lighters_speed[0][i]
             self.lighters_pos[1][i] = self.lighters_pos[1][i] + self.lighters_speed[1][i]

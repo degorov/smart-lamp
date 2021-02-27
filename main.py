@@ -96,10 +96,7 @@ encoder_previous = encoder.value
 encoder_used = False
 
 led.loading_rings(100)
-utime.sleep(1)
 effects.next_effect(False)
-led.render(True)
-utime.sleep(1)
 
 # frame_time_p = utime.ticks_us()
 
