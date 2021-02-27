@@ -6,8 +6,16 @@ except:
     import random as urandom
 
 import led
-import func
 import math
+
+
+def constrain(x, a, b):
+    if x < a:
+        return a
+    elif x > b:
+        return b
+    else:
+        return x
 
 
 current_effect_idx = 4
@@ -121,7 +129,7 @@ class Matrix:
                 led.led_matrix[x][y] = led.led_matrix[x][y + 1]
 
     def adjust(self, delta):
-        self.scale = func.constrain(self.scale - delta * 5, 5, 150)
+        self.scale = constrain(self.scale - delta * 5, 5, 150)
 
     def value(self, state):
         self.scale = state
@@ -151,7 +159,7 @@ class Sparkles:
                     led.led_matrix[x][y] = (0, 0, 0)
 
     def adjust(self, delta):
-        self.scale = func.constrain(self.scale + delta, 1, 32)
+        self.scale = constrain(self.scale + delta, 1, 32)
 
     def value(self, state):
         self.scale = state
@@ -193,8 +201,8 @@ class Lighters:
             if self.loop_counter == 0:
                 self.lighters_speed[0][i] = self.lighters_speed[0][i] + urandom.randrange(-3, 4)
                 self.lighters_speed[1][i] = self.lighters_speed[1][i] + urandom.randrange(-3, 4)
-                self.lighters_speed[0][i] = func.constrain(self.lighters_speed[0][i], -20, 20)
-                self.lighters_speed[1][i] = func.constrain(self.lighters_speed[1][i], -20, 20)
+                self.lighters_speed[0][i] = constrain(self.lighters_speed[0][i], -20, 20)
+                self.lighters_speed[1][i] = constrain(self.lighters_speed[1][i], -20, 20)
 
             self.lighters_pos[0][i] = self.lighters_pos[0][i] + self.lighters_speed[0][i]
             self.lighters_pos[1][i] = self.lighters_pos[1][i] + self.lighters_speed[1][i]
@@ -217,7 +225,7 @@ class Lighters:
 
 
     def adjust(self, delta):
-        self.number = func.constrain(self.number + delta, 1, 16)
+        self.number = constrain(self.number + delta, 1, 16)
 
     def value(self, state):
         self.number = state
@@ -329,12 +337,16 @@ class Plasma:
 
         for x in range(led.WIDTH):
             for y in range(led.HEIGHT):
-                hue = func.sinquad( self.counter + x ) + func.sinquad( self.counter + y / 4.5 ) + func.sinquad( x + y + self.counter ) + func.sinquad( math.sqrt( ( x + self.counter ) ** 2.0 + ( y + 1.5 * self.counter ) ** 2.0 ) / 4.0 )
-                hue = func.remap(hue, -4, 4, 0, 255)
+                hue = int((
+                    math.sin( self.counter + x ) +
+                    math.sin( self.counter + y / 4.5 ) +
+                    math.sin( x + y + self.counter ) +
+                    math.sin( math.sqrt( ( x + self.counter ) ** 2.0 + ( y + 1.5 * self.counter ) ** 2.0 ) / 4.0 )
+                    + 4) * 32)
                 led.led_matrix[x][y] = (hue, 255, 255)
 
     def adjust(self, delta):
-        self.speed = func.constrain(self.speed + delta / 100, 0.05, 0.5)
+        self.speed = constrain(self.speed + delta / 100, 0.05, 0.5)
 
     def value(self, state):
         self.speed = state / 100

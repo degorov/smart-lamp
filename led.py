@@ -5,8 +5,6 @@ try:
 except:
     pass
 
-import func
-
 
 WIDTH = 10
 HEIGHT = 10
@@ -25,8 +23,20 @@ led_brightness = MAX_BRIGHTNESS
 
 def adjust_brightness(delta):
     global led_brightness
-    led_brightness = func.constrain(led_brightness + delta *  4, 0, MAX_BRIGHTNESS)
+    new_brightness = led_brightness + delta *  4
+    if new_brightness < 0:
+        led_brightness = 0
+    elif new_brightness > MAX_BRIGHTNESS:
+        led_brightness = MAX_BRIGHTNESS
+    else:
+        led_brightness = new_brightness
 
+
+def scale8(i, scale):
+    return (i * (1 + scale)) >> 8
+
+def scale8_video(i, scale):
+    return ((i * scale) >> 8) + (1 if (i and scale) else 0)
 
 # inputs are all in range 0-255
 # shamelessly ripped from FastLED
@@ -36,7 +46,7 @@ def hsv_to_rainbow_rgb(hue, sat, val, cap):
 
     offset = hue & 0x1F
     offset8 = offset << 3
-    third = func.scale8(offset8, 85)
+    third = scale8(offset8, 85)
 
     if not(hue & 0x80):
         if not(hue & 0x40):
@@ -50,7 +60,7 @@ def hsv_to_rainbow_rgb(hue, sat, val, cap):
                 b = 0
         else:
             if not(hue & 0x20):
-                twothirds = func.scale8(offset8, 170)
+                twothirds = scale8(offset8, 170)
                 r = 171 - twothirds
                 g = 170 + third
                 b = 0
@@ -62,7 +72,7 @@ def hsv_to_rainbow_rgb(hue, sat, val, cap):
         if not(hue & 0x40):
             if not(hue & 0x20):
                 r = 0
-                twothirds = func.scale8(offset8, 170)
+                twothirds = scale8(offset8, 170)
                 g = 171 - twothirds
                 b = 85 + twothirds
             else:
@@ -85,26 +95,26 @@ def hsv_to_rainbow_rgb(hue, sat, val, cap):
             b = 255
             g = 255
         else:
-            if r: r = func.scale8(r, sat)
-            if g: g = func.scale8(g, sat)
-            if b: b = func.scale8(b, sat)
+            if r: r = scale8(r, sat)
+            if g: g = scale8(g, sat)
+            if b: b = scale8(b, sat)
             desat = 255 - sat
-            desat = func.scale8(desat, desat)
+            desat = scale8(desat, desat)
             brightness_floor = desat
             r = r + brightness_floor
             g = g + brightness_floor
             b = b + brightness_floor
 
     if val != 255:
-        val = func.scale8_video(val, val)
+        val = scale8_video(val, val)
         if val == 0:
             r = 0
             g = 0
             b = 0
         else:
-            if r: r = func.scale8(r, val)
-            if g: g = func.scale8(g, val)
-            if b: b = func.scale8(b, val)
+            if r: r = scale8(r, val)
+            if g: g = scale8(g, val)
+            if b: b = scale8(b, val)
 
     return r, g, b
 
