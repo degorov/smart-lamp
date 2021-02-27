@@ -19,7 +19,7 @@ except OSError: pass
 finally: led.loading_rings(20)
 
 if button.pressed():
-    try: uos.remove('cfg/timezone.cfg')
+    try: uos.remove('cfg/params.cfg')
     except: pass
     try: uos.remove('cfg/alarm.cfg')
     except: pass
@@ -44,16 +44,22 @@ else:
         wifi.hotspot()
 
 try:
-    timezone_config_file = open('cfg/timezone.cfg', 'r')
-    timezone = int(timezone_config_file.readline().strip())
-    timezone_config_file.close()
+    params_config_file = open('cfg/params.cfg', 'r')
+    params_config = [x.strip() for x in params_config_file.readlines()]
+    timezone = int(params_config[0])
+    led.MAX_BRIGHTNESS = int(params_config[1])
+    led.led_brightness = led.MAX_BRIGHTNESS
+    params_config_file.close()
     print('Got timezone configuration: ' + str(timezone))
+    print('Got brightness configuration: ' + str(led.MAX_BRIGHTNESS))
 except:
-    timezone_config_file = open('cfg/timezone.cfg', 'w')
+    params_config_file = open('cfg/params.cfg', 'w')
     timezone = 3
-    timezone_config_file.write(str(timezone))
-    timezone_config_file.close()
-    print('No timezone config file found, setting timezone to +3')
+    params_config = ['3', str(led.MAX_BRIGHTNESS)]
+    params_config_file.write('\n'.join(params_config))
+    params_config_file.close()
+    print('No timezone specified, setting timezone to +3')
+    print('No brightness specified, assuming %d' % (led.MAX_BRIGHTNESS))
 finally:
     led.loading_rings(50)
 

@@ -55,7 +55,7 @@ export default function Settings({ ip, setIp, setSave }) {
     password: '',
     showPassword: false,
     timezone: 3,
-    brightness: 192,
+    brightness: 184,
   });
 
   const handleChangeSettings = (prop) => (event) => {
@@ -192,7 +192,7 @@ export default function Settings({ ip, setIp, setSave }) {
 
             <ListSubheader>
               Максимальная яркость:
-              <Typography component="span" color={settings.brightness > 192 ? 'error' : 'initial'}>
+              <Typography component="span" color={settings.brightness > 184 ? 'error' : 'initial'}>
                 &nbsp;{settings.brightness}
               </Typography>
             </ListSubheader>
@@ -203,11 +203,11 @@ export default function Settings({ ip, setIp, setSave }) {
                 </Grid>
                 <Grid item xs>
                   <Slider
-                    min={0}
+                    min={72}
                     max={255}
                     marks={[
                       {
-                        value: 192,
+                        value: 184,
                         label: 'Предел БП',
                       },
                     ]}

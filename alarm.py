@@ -74,7 +74,7 @@ class Alarm:
             self.alarm = 0
             self.before = 0
             self.after = 0
-            print('Alarm disabled in settings')
+            print('Alarm disabled')
 
 
     def check(self):

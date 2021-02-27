@@ -9,7 +9,8 @@ except:
 WIDTH = 10
 HEIGHT = 10
 
-MAX_BRIGHTNESS = 192
+MIN_BRIGHTNESS = 16
+MAX_BRIGHTNESS = 184
 
 
 led_map = [[((HEIGHT * (WIDTH - 1)) - HEIGHT * x + y) * 3 if x % 2 else ((HEIGHT * (WIDTH - 1) - 1) - HEIGHT * (x - 1) - y) * 3 for y in range(HEIGHT)] for x in range(WIDTH)]
@@ -24,8 +25,8 @@ led_brightness = MAX_BRIGHTNESS
 def adjust_brightness(delta):
     global led_brightness
     new_brightness = led_brightness + delta *  4
-    if new_brightness < 0:
-        led_brightness = 0
+    if new_brightness < MIN_BRIGHTNESS:
+        led_brightness = MIN_BRIGHTNESS
     elif new_brightness > MAX_BRIGHTNESS:
         led_brightness = MAX_BRIGHTNESS
     else:
