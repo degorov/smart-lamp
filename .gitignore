@@ -1,5 +1,5 @@
 tmp/
-cfg/*.cfg
+cfg/
 
 app/node_modules/
 app/dist/
