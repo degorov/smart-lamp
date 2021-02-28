@@ -39,7 +39,7 @@ def next_effect(switch):
     elif current_effect_idx == 1:
         current_effect = SelectedColor()
     elif current_effect_idx == 2:
-        current_effect = AllHueLoop()
+        current_effect = AllHueLoop(192)
     elif current_effect_idx == 3:
         current_effect = VerticalRainbow(4)
     elif current_effect_idx == 4:
@@ -51,9 +51,9 @@ def next_effect(switch):
     elif current_effect_idx == 7:
         current_effect = Lighters(5, 8)
     elif current_effect_idx == 8:
-        current_effect = Fire(0, 1)
-    elif current_effect_idx == 9:
         current_effect = Plasma(0.1)
+    elif current_effect_idx == 9:
+        current_effect = Fire(0, 1)
 
 # ============================================================================ #
 
@@ -91,12 +91,13 @@ class SelectedColor:
 
 class AllHueLoop:
 
-    def __init__(self):
+    def __init__(self, sat):
         self.hue = 0
+        self.sat = 192
 
     def update(self):
 
-        led.fill_solid(self.hue, 255, 255)
+        led.fill_solid(self.hue, self.sat, 255)
 
         if self.hue == 256:
             self.hue = 0
@@ -104,10 +105,10 @@ class AllHueLoop:
             self.hue += 1
 
     def adjust(self, delta):
-        pass
+        self.sat = constrain(self.sat + delta, 0, 255)
 
     def value(self, state):
-        pass
+        self.sat = state
 
 # ============================================================================ #
 
@@ -276,6 +277,34 @@ class Lighters:
 
 # ============================================================================ #
 
+class Plasma:
+
+    def __init__(self, speed):
+        self.speed = speed
+        self.counter = 0
+
+    def update(self):
+
+        self.counter = self.counter + self.speed
+
+        for x in range(led.WIDTH):
+            for y in range(led.HEIGHT):
+                hue = int((
+                    math.sin( self.counter + x ) +
+                    math.sin( self.counter + y / 4.5 ) +
+                    math.sin( x + y + self.counter ) +
+                    math.sin( math.sqrt( ( x + self.counter ) ** 2.0 + ( y + 1.5 * self.counter ) ** 2.0 ) / 4.0 )
+                    + 4) * 32)
+                led.led_matrix[x][y] = (hue, 255, 255)
+
+    def adjust(self, delta):
+        self.speed = constrain(self.speed + delta / 100, 0.05, 0.5)
+
+    def value(self, state):
+        self.speed = state / 100
+
+# ============================================================================ #
+
 class Fire:
 
     def __init__(self, hue_rotation, sparkles):
@@ -366,31 +395,3 @@ class Fire:
 
     def value(self, state):
         self.sparkles = state
-
-# ============================================================================ #
-
-class Plasma:
-
-    def __init__(self, speed):
-        self.speed = speed
-        self.counter = 0
-
-    def update(self):
-
-        self.counter = self.counter + self.speed
-
-        for x in range(led.WIDTH):
-            for y in range(led.HEIGHT):
-                hue = int((
-                    math.sin( self.counter + x ) +
-                    math.sin( self.counter + y / 4.5 ) +
-                    math.sin( x + y + self.counter ) +
-                    math.sin( math.sqrt( ( x + self.counter ) ** 2.0 + ( y + 1.5 * self.counter ) ** 2.0 ) / 4.0 )
-                    + 4) * 32)
-                led.led_matrix[x][y] = (hue, 255, 255)
-
-    def adjust(self, delta):
-        self.speed = constrain(self.speed + delta / 100, 0.05, 0.5)
-
-    def value(self, state):
-        self.speed = state / 100
