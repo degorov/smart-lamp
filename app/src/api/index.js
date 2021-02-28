@@ -1,9 +1,10 @@
 import ping from './ping';
 import geteffects from './geteffects';
 import setbrightness from './setbrightness';
+import seteffect from './seteffect';
 
 const TIMEOUT = 5000;
-const FUNCTIONS = { ping, geteffects, setbrightness };
+const FUNCTIONS = { ping, geteffects, setbrightness, seteffect };
 
 export default function Api(showLoader, storageIp) {
   const fetcher = async (ip = storageIp(), payload) => {

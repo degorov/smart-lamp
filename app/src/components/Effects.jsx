@@ -58,7 +58,7 @@ export default function Effects() {
   const [brightness, setBrightness] = useState(minBrightness);
   const [maxBrightness, setMaxBrightness] = useState(minBrightness);
 
-  const [effect, setEffect] = useState({ index: 3, value: 20, save: false });
+  const [effect, setEffect] = useState({ index: 0, value: 0, save: false });
   const defaultValues = [0, 255, 192, 20, 20, -40, 4, 5, 10, 1];
 
   const handleChangeBrightness = (event, newValue) => {
@@ -90,6 +90,7 @@ export default function Effects() {
     if (!result) {
       setConnected(false);
     } else {
+      setEffect({ index: result.index, value: result.value, save: false });
       setBrightness(result.brightness);
       setMaxBrightness(result.maxbrightness);
     }
@@ -107,8 +108,7 @@ export default function Effects() {
   useEffect(() => {
     if (effect.save) {
       (async () => {
-        console.log(`save effect: ${effect.index}, value: ${Math.abs(effect.value)}`);
-        const result = await API.ping();
+        const result = await API.seteffect(effect.index, Math.abs(effect.value));
         if (!result) {
           setConnected(false);
         }
@@ -158,6 +158,17 @@ export default function Effects() {
                 track={false}
                 min={0}
                 max={255}
+                marks={[
+                  { value: 0, label: 'К' },
+                  { value: 32, label: 'О' },
+                  { value: 64, label: 'Ж' },
+                  { value: 96, label: 'З' },
+                  { value: 128, label: 'Г' },
+                  { value: 160, label: 'С' },
+                  { value: 192, label: 'Ф' },
+                  { value: 224, label: 'Р' },
+                  { value: 255, label: 'К' },
+                ]}
                 value={Math.floor(effect.value / 256)}
                 onChange={(e, newValue) =>
                   handleChangeParamSlider(hueHelper(newValue, effect.value))

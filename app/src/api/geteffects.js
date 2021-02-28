@@ -5,6 +5,8 @@ export default async function geteffects(fetcher, ip) {
       return {
         brightness: +json.brightness,
         maxbrightness: +json.maxbrightness,
+        index: +json.index,
+        value: +json.value,
       };
     } else {
       return false;

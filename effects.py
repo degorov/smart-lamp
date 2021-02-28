@@ -68,6 +68,9 @@ class Void:
     def value(self, state):
         pass
 
+    def getvalue(self):
+        return 0
+
 # ============================================================================ #
 
 class SelectedColor:
@@ -86,6 +89,9 @@ class SelectedColor:
     def value(self, state):
         self.hue = state // 256
         self.sat = state % 256
+
+    def getvalue(self):
+        return self.hue * 256 + self.sat
 
 # ============================================================================ #
 
@@ -110,6 +116,9 @@ class AllHueLoop:
     def value(self, state):
         self.sat = state
 
+    def getvalue(self):
+        return self.sat
+
 # ============================================================================ #
 
 class VerticalRainbow:
@@ -130,6 +139,9 @@ class VerticalRainbow:
     def value(self, state):
         self.speed = state - 16
 
+    def getvalue(self):
+        return self.speed + 16
+
 # ============================================================================ #
 
 class HorizontalRainbow:
@@ -149,6 +161,9 @@ class HorizontalRainbow:
 
     def value(self, state):
         self.speed = state - 16
+
+    def getvalue(self):
+        return self.speed + 16
 
 # ============================================================================ #
 
@@ -179,6 +194,9 @@ class Matrix:
     def value(self, state):
         self.scale = state
 
+    def getvalue(self):
+        return -self.scale
+
 # ============================================================================ #
 
 class Sparkles:
@@ -208,6 +226,9 @@ class Sparkles:
 
     def value(self, state):
         self.scale = state
+
+    def getvalue(self):
+        return self.scale
 
 # ============================================================================ #
 
@@ -275,6 +296,9 @@ class Lighters:
     def value(self, state):
         self.number = state
 
+    def getvalue(self):
+        return self.number
+
 # ============================================================================ #
 
 class Plasma:
@@ -302,6 +326,9 @@ class Plasma:
 
     def value(self, state):
         self.speed = state / 100
+
+    def getvalue(self):
+        return int(self.speed * 100)
 
 # ============================================================================ #
 
@@ -395,3 +422,6 @@ class Fire:
 
     def value(self, state):
         self.sparkles = state
+
+    def getvalue(self):
+        return self.sparkles
