@@ -3,6 +3,8 @@ import ujson
 
 import led
 import effects
+import wifi
+import alarm
 
 
 def datetime_string(*dttuple):
@@ -39,6 +41,15 @@ def router(payload):
             timezone = json['timezone']
             maxbrightness = json['maxbrightness']
             return header + ujson.dumps(savesettings(ssid, password, timezone, maxbrightness))
+        elif action == 'getalarm':
+            return header + ujson.dumps(getalarm())
+        elif action == 'savealarm':
+            enabled = json['enabled']
+            repeat = json['repeat']
+            time = json['time']
+            before = json['before']
+            after = json['after']
+            return header + ujson.dumps(savealarm(enabled, repeat, time, before, after))
         else:
             return header + ujson.dumps({"error": "UNKNOWN_METHOD"})
     except KeyError:
@@ -59,11 +70,13 @@ def geteffects():
         "value": effects.current_effect.getvalue()
     }
 
+
 def setbrightness(value):
     led.set_brightness(value)
     return {
         "error": "OK"
     }
+
 
 def seteffect(index, value):
     if effects.current_effect_idx != index:
@@ -74,6 +87,7 @@ def seteffect(index, value):
     return {
         "error": "OK"
     }
+
 
 def getsettings():
     try:
@@ -104,6 +118,7 @@ def getsettings():
         "maxbrightness": int(params_config[1])
     }
 
+
 def savesettings(ssid, password, timezone, maxbrightness):
     try:
         params_config_file = open('cfg/params.cfg', 'w')
@@ -124,6 +139,45 @@ def savesettings(ssid, password, timezone, maxbrightness):
         return {
             "error": "WIFI_ERROR"
         }
+
+    return {
+        "error": "OK"
+    }
+
+
+def getalarm():
+    try:
+        alarm_config_file = open('cfg/alarm.cfg', 'r')
+        alarm_config = [x.strip() for x in alarm_config_file.readlines()]
+        alarm_config_file.close()
+    except:
+        return {
+            "error": "ALARM_ERROR"
+        }
+
+    return {
+        "error": "OK",
+        "apmode": int(wifi.apmode),
+        "enabled": int(alarm_config[0]),
+        "repeat": int(alarm_config[1]),
+        "time": str(alarm_config[2]),
+        "before": int(alarm_config[3]),
+        "after": int(alarm_config[4])
+    }
+
+
+def savealarm(enabled, repeat, time, before, after):
+    try:
+        alarm_config_file = open('cfg/alarm.cfg', 'w')
+        alarm_config = [str(enabled), str(repeat), str(time)[0:5] + ':00', str(before), str(after)]
+        alarm_config_file.write('\n'.join(alarm_config))
+        alarm_config_file.close()
+    except:
+        return {
+            "error": "ALARM_ERROR"
+        }
+
+    alarm.dawn_alarm.reconfigure(True)
 
     return {
         "error": "OK"

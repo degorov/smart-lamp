@@ -10,6 +10,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 
 import AlarmIcon from '@material-ui/icons/Alarm';
 
@@ -24,6 +25,9 @@ const useStyles = makeStyles((theme) => ({
     background: theme.palette.background.paper,
     width: 75,
   },
+  message: {
+    padding: theme.spacing(2),
+  },
 }));
 
 export default function Alarm({ setSave }) {
@@ -33,38 +37,65 @@ export default function Alarm({ setSave }) {
   const API = useContext(ApiContext);
 
   const [alarm, setAlarm] = useState({
+    apmode: false,
     enabled: false,
-    time: '',
     repeat: 0,
+    time: '',
     before: 0,
     after: 0,
   });
 
-  const handleToggleAlarm = () => {
-    // setState((prev) => !prev);
+  const handleToggleAlarm = (event) => {
+    setAlarm({ ...alarm, enabled: event.target.checked });
+    setSave(saveAlarm);
   };
 
   const handleChangeAlarm = (prop) => (event) => {
-    // setState({ ...settings, [prop]: event.target.value });
+    setAlarm({ ...alarm, [prop]: event.target.value });
+    setSave(saveAlarm);
   };
 
-  const handleToggleRepeat = (value) => () => {
-    // https://material-ui.com/components/lists/
+  const handleToggleRepeat = (index) => (event) => {
+    if (event.target.checked) {
+      setAlarm({ ...alarm, repeat: (1 << (6 - index)) | alarm.repeat });
+    } else {
+      setAlarm({ ...alarm, repeat: ~(1 << (6 - index)) & alarm.repeat });
+    }
+    setSave(saveAlarm);
   };
 
   const loadAlarm = useCallback(async () => {
-    const result = await API.ping();
+    const result = await API.getalarm();
     if (!result) {
       setConnected(false);
+    } else {
+      setAlarm({
+        apmode: result.apmode,
+        enabled: result.enabled,
+        repeat: result.repeat,
+        time: result.time,
+        before: result.before,
+        after: result.after,
+      });
     }
   }, [API, setConnected]);
 
   const saveAlarm = () => async () => {
-    // dawn_alarm.reconfigure(True)
-    const result = await API.ping();
-    if (!result) {
-      setConnected(false);
-    }
+    setAlarm((alarm) => {
+      (async () => {
+        const result = await API.savealarm(
+          alarm.enabled,
+          alarm.repeat,
+          alarm.time,
+          alarm.before,
+          alarm.after,
+        );
+        if (!result) {
+          setConnected(false);
+        }
+      })();
+      return alarm;
+    });
     setSave(null);
   };
 
@@ -78,7 +109,7 @@ export default function Alarm({ setSave }) {
     };
   }, [loadAlarm, setSave]);
 
-  return (
+  return !alarm.apmode ? (
     <List>
       <ListItem>
         <ListItemIcon>
@@ -86,7 +117,7 @@ export default function Alarm({ setSave }) {
         </ListItemIcon>
         <ListItemText primary="Будильник включен" />
         <ListItemSecondaryAction>
-          <Switch color="primary" edge="end" checked={true} onChange={handleToggleAlarm} />
+          <Switch color="primary" edge="end" checked={alarm.enabled} onChange={handleToggleAlarm} />
         </ListItemSecondaryAction>
       </ListItem>
       <ListItem>
@@ -100,19 +131,24 @@ export default function Alarm({ setSave }) {
           inputProps={{
             step: 300, // 5 minutes
           }}
-          value={''}
+          value={alarm.time}
           onChange={handleChangeAlarm('time')}
         />
       </ListItem>
 
       <ListSubheader>Повторять по:</ListSubheader>
       {['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'].map(
-        (value, index) => (
-          <ListItem dense button key={index} onClick={handleToggleRepeat(index)}>
+        (label, index) => (
+          <ListItem dense button key={index} disableRipple>
             <ListItemIcon>
-              <Checkbox color="primary" edge="start" checked={true} disableRipple />
+              <Checkbox
+                color="primary"
+                edge="start"
+                checked={!!((1 << (6 - index)) & alarm.repeat)}
+                onClick={handleToggleRepeat(index)}
+              />
             </ListItemIcon>
-            <ListItemText primary={value} />
+            <ListItemText primary={label} />
           </ListItem>
         ),
       )}
@@ -126,8 +162,9 @@ export default function Alarm({ setSave }) {
             size="small"
             variant="outlined"
             className={classes.timeField}
+            type="number"
             inputProps={{ maxLength: 2 }}
-            value={''}
+            value={alarm.before}
             onChange={handleChangeAlarm('before')}
           />
         </ListItemSecondaryAction>
@@ -140,12 +177,18 @@ export default function Alarm({ setSave }) {
             size="small"
             variant="outlined"
             className={classes.timeField}
+            type="number"
             inputProps={{ maxLength: 2 }}
-            value={''}
+            value={alarm.after}
             onChange={handleChangeAlarm('after')}
           />
         </ListItemSecondaryAction>
       </ListItem>
     </List>
+  ) : (
+    <Typography align={'center'} className={classes.message}>
+      Настройка будильника будет доступна после подключения светильника к сети Wi-Fi с доступом в
+      Интернет для синхронизации с серверами точного времени.
+    </Typography>
   );
 }

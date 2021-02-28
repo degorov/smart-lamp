@@ -63,7 +63,7 @@ except:
 finally:
     led.loading_rings(50)
 
-dawn_alarm = alarm.Alarm()
+dawn_alarm = alarm.dawn_alarm
 led.loading_rings(60)
 
 if ntp.settime(timezone):

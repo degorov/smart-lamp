@@ -111,3 +111,6 @@ class Dawn:
 
         color = (int(position * 0.098 + 10), int(255 - position * 0.333), int(position * 0.961 + 10))
         led.fill_solid(*color)
+
+
+dawn_alarm = Alarm()
