@@ -1,6 +1,8 @@
 import utime
 import ujson
 
+import led
+
 
 def datetime_string(*dttuple):
     if len(dttuple) == 0:
@@ -16,10 +18,13 @@ def router(payload):
     try:
         json = ujson.loads(payload)
         action = json['action']
-        if action == 'savewifisettings':
-            return header + ujson.dumps(savewifisettings(json['ssid'], json['password']))
-        elif action == 'ping':
+        if action == 'ping':
             return header + ujson.dumps({"error": "OK"})
+        elif action == 'geteffects':
+            return header + ujson.dumps(geteffects())
+        elif action == 'setbrightness':
+            value = json['value']
+            return header + ujson.dumps(setbrightness(value))
         else:
             return header + ujson.dumps({"error": "UNKNOWN_METHOD"})
     except KeyError:
@@ -27,11 +32,15 @@ def router(payload):
     except ValueError:
         return header
 
-
-def savewifisettings(ssid, password):
-    json_response = {
+def geteffects():
+    return {
         "error": "OK",
-        "ssid": ssid,
-        "password": password
+        "brightness": led.led_brightness,
+        "maxbrightness": led.MAX_BRIGHTNESS
     }
-    return json_response
+
+def setbrightness(value):
+    led.set_brightness(value)
+    return {
+        "error": "OK"
+    }

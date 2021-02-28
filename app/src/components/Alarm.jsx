@@ -53,7 +53,7 @@ export default function Alarm({ setSave }) {
   };
 
   const loadAlarm = useCallback(async () => {
-    const result = await API.ping(localStorage.getItem('lamp-ip'));
+    const result = await API.ping();
     if (!result) {
       setConnected(false);
     }
@@ -61,7 +61,7 @@ export default function Alarm({ setSave }) {
 
   const saveAlarm = () => async () => {
     // dawn_alarm.reconfigure(True)
-    const result = await API.ping(localStorage.getItem('lamp-ip'));
+    const result = await API.ping();
     if (!result) {
       setConnected(false);
     }

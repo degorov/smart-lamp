@@ -78,7 +78,7 @@ export default function Settings({ ip, setIp, setSave }) {
 
   const loadSettings = useCallback(async () => {
     if (connected) {
-      const result = await API.ping(localStorage.getItem('lamp-ip'));
+      const result = await API.ping();
       if (!result) {
         setConnected(false);
       }
@@ -86,7 +86,7 @@ export default function Settings({ ip, setIp, setSave }) {
   }, [API, connected, setConnected]);
 
   const saveSettings = () => async () => {
-    const result = await API.ping(localStorage.getItem('lamp-ip'));
+    const result = await API.ping();
     if (!result) {
       setConnected(false);
     }

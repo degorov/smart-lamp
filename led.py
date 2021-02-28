@@ -22,15 +22,17 @@ led_buffer = bytearray(HEIGHT * WIDTH * 3)
 led_brightness = MAX_BRIGHTNESS
 
 
-def adjust_brightness(delta):
+def set_brightness(value):
     global led_brightness
-    new_brightness = led_brightness + delta *  4
-    if new_brightness < MIN_BRIGHTNESS:
+    if value < MIN_BRIGHTNESS:
         led_brightness = MIN_BRIGHTNESS
-    elif new_brightness > MAX_BRIGHTNESS:
+    elif value > MAX_BRIGHTNESS:
         led_brightness = MAX_BRIGHTNESS
     else:
-        led_brightness = new_brightness
+        led_brightness = value
+
+def adjust_brightness(delta):
+    set_brightness(led_brightness + delta * 4)
 
 
 def scale8(i, scale):

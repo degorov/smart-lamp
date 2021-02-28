@@ -61,7 +61,7 @@ function App() {
   const [connected, setConnected] = useState();
   const [save, setSave] = useState(null);
 
-  const API = useMemo(() => Api(setLoading), []);
+  const API = useMemo(() => Api(setLoading, () => localStorage.getItem('lamp-ip')), []);
 
   useEffect(() => {
     if (connected === undefined && !ip.address && page === null) {

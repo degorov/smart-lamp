@@ -86,18 +86,18 @@ export default function Effects() {
   };
 
   const loadEffects = useCallback(async () => {
-    const result = await API.ping(localStorage.getItem('lamp-ip'));
+    const result = await API.geteffects();
     if (!result) {
       setConnected(false);
+    } else {
+      setBrightness(result.brightness);
+      setMaxBrightness(result.maxbrightness);
     }
-    setBrightness(128);
-    setMaxBrightness(184);
   }, [API, setConnected]);
 
   // save brightness
   const handleCommitBrightness = async (event, newValue) => {
-    console.log(`save brightness: ${newValue}`);
-    const result = await API.ping(localStorage.getItem('lamp-ip'));
+    const result = await API.setbrightness(newValue);
     if (!result) {
       setConnected(false);
     }
@@ -108,7 +108,7 @@ export default function Effects() {
     if (effect.save) {
       (async () => {
         console.log(`save effect: ${effect.index}, value: ${Math.abs(effect.value)}`);
-        const result = await API.ping(localStorage.getItem('lamp-ip'));
+        const result = await API.ping();
         if (!result) {
           setConnected(false);
         }

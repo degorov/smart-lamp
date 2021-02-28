@@ -1,10 +1,12 @@
 import ping from './ping';
+import geteffects from './geteffects';
+import setbrightness from './setbrightness';
 
-const TIMEOUT = 3000;
-const FUNCTIONS = { ping };
+const TIMEOUT = 5000;
+const FUNCTIONS = { ping, geteffects, setbrightness };
 
-export default function Api(showLoader) {
-  const fetcher = async (ip, payload) => {
+export default function Api(showLoader, storageIp) {
+  const fetcher = async (ip = storageIp(), payload) => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), TIMEOUT);
     showLoader(true);
