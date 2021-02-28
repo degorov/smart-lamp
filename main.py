@@ -55,7 +55,7 @@ try:
 except:
     params_config_file = open('cfg/params.cfg', 'w')
     timezone = 3
-    params_config = ['3', str(led.MAX_BRIGHTNESS)]
+    params_config = [str(timezone), str(led.MAX_BRIGHTNESS)]
     params_config_file.write('\n'.join(params_config))
     params_config_file.close()
     print('No timezone specified, setting timezone to +3')

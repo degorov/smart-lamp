@@ -2,6 +2,11 @@ import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
@@ -41,6 +46,10 @@ export default function Settings({ ip, setIp, setSave }) {
   const [connected, setConnected] = useContext(ConnectionContext);
   const API = useContext(ApiContext);
 
+  const [alert, setAlert] = React.useState(false);
+  const openAlert = () => setAlert(true);
+  const closeAlert = () => setAlert(false);
+
   const handleChangeIp = (event) => {
     const ip = event.target.value;
     if (/^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/.test(ip)) {
@@ -51,11 +60,11 @@ export default function Settings({ ip, setIp, setSave }) {
   };
 
   const [settings, setSettings] = useState({
-    ssid: 'Smart-Lamp',
+    ssid: '',
     password: '',
     showPassword: false,
     timezone: 3,
-    brightness: 184,
+    brightness: 0,
   });
 
   const handleChangeSettings = (prop) => (event) => {
@@ -78,18 +87,37 @@ export default function Settings({ ip, setIp, setSave }) {
 
   const loadSettings = useCallback(async () => {
     if (connected) {
-      const result = await API.ping();
+      const result = await API.getsettings();
       if (!result) {
         setConnected(false);
+      } else {
+        setSettings((settings) => ({
+          ...settings,
+          ssid: result.ssid,
+          password: result.password,
+          timezone: result.timezone,
+          brightness: result.maxbrightness,
+        }));
       }
     }
   }, [API, connected, setConnected]);
 
   const saveSettings = () => async () => {
-    const result = await API.ping();
-    if (!result) {
-      setConnected(false);
-    }
+    setSettings((settings) => {
+      (async () => {
+        const result = await API.savesettings(
+          settings.ssid,
+          settings.password,
+          settings.timezone,
+          settings.brightness,
+        );
+        if (result) {
+          openAlert();
+        }
+        setConnected(false);
+      })();
+      return settings;
+    });
     setSave(null);
   };
 
@@ -223,7 +251,23 @@ export default function Settings({ ip, setIp, setSave }) {
           </>
         ) : null}
       </List>
+
       <Credits />
+
+      <Dialog open={alert} onClose={closeAlert}>
+        <DialogTitle>{'Внимание!'}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Для применения настроек светильник необходимо перезагрузить вручную. Отключите
+            светильник от сети и после перезагрузки заново подключитесь к светильнику в приложении.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeAlert} color="primary">
+            ОК
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

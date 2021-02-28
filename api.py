@@ -31,6 +31,14 @@ def router(payload):
             index = json['index']
             value = json['value']
             return header + ujson.dumps(seteffect(index, value))
+        elif action == 'getsettings':
+            return header + ujson.dumps(getsettings())
+        elif action == 'savesettings':
+            ssid = json['ssid']
+            password = json['password']
+            timezone = json['timezone']
+            maxbrightness = json['maxbrightness']
+            return header + ujson.dumps(savesettings(ssid, password, timezone, maxbrightness))
         else:
             return header + ujson.dumps({"error": "UNKNOWN_METHOD"})
     except KeyError:
@@ -63,6 +71,60 @@ def seteffect(index, value):
         effects.next_effect(False)
     else:
         effects.current_effect.value(value)
+    return {
+        "error": "OK"
+    }
+
+def getsettings():
+    try:
+        params_config_file = open('cfg/params.cfg', 'r')
+        params_config = [x.strip() for x in params_config_file.readlines()]
+        params_config_file.close()
+    except:
+        return {
+            "error": "PARAMS_ERROR"
+        }
+
+    try:
+        wifi_config_file = open('cfg/wifi.cfg', 'r')
+        wifi_config = [x.strip() for x in wifi_config_file.readlines()]
+        wifi_config_file.close()
+    except OSError:
+        wifi_config = ['', '']
+    except:
+        return {
+            "error": "WIFI_ERROR"
+        }
+
+    return {
+        "error": "OK",
+        "ssid": str(wifi_config[0]),
+        "password": str(wifi_config[1]),
+        "timezone": int(params_config[0]),
+        "maxbrightness": int(params_config[1])
+    }
+
+def savesettings(ssid, password, timezone, maxbrightness):
+    try:
+        params_config_file = open('cfg/params.cfg', 'w')
+        params_config = [str(timezone), str(maxbrightness)]
+        params_config_file.write('\n'.join(params_config))
+        params_config_file.close()
+    except:
+        return {
+            "error": "PARAMS_ERROR"
+        }
+
+    try:
+        wifi_config_file = open('cfg/wifi.cfg', 'w')
+        wifi_config = [str(ssid), str(password)]
+        wifi_config_file.write('\n'.join(wifi_config))
+        wifi_config_file.close()
+    except:
+        return {
+            "error": "WIFI_ERROR"
+        }
+
     return {
         "error": "OK"
     }
