@@ -84,6 +84,7 @@ class Alarm:
                 print('Alarm disabled in settings')
 
 
+    @micropython.native
     def check(self):
         if self.enabled and ((utime.time() - self.before) > 0):
             return True
@@ -99,6 +100,7 @@ class Dawn:
         self.after = after
         self.delta = 255 / (alarm - before)
 
+    @micropython.native
     def update(self):
 
         if utime.time() < self.alarm:

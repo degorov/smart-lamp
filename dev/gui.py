@@ -6,7 +6,7 @@ from led import WIDTH, HEIGHT, led_matrix, hsv_to_rainbow_rgb
 import effects
 
 SIZE = 32
-FPS = 15
+FPS = 30
 
 window = Tk()
 window.title("Smart Lamp Effects GUI")

@@ -3,7 +3,13 @@ try:
     from machine import Pin
     LED_PIN = Pin(4, Pin.OUT)
 except:
-    pass
+    import types
+    micropython = types.SimpleNamespace()
+    def native(f, *args, **kwargs):
+        def dummy(*args, **kwargs):
+            return f(*args, **kwargs)
+        return dummy
+    micropython.native = native
 
 
 WIDTH = 10
@@ -34,15 +40,17 @@ def set_brightness(value):
 def adjust_brightness(delta):
     set_brightness(led_brightness + delta * 4)
 
-
+@micropython.native
 def scale8(i, scale):
     return (i * (1 + scale)) >> 8
 
+@micropython.native
 def scale8_video(i, scale):
     return ((i * scale) >> 8) + (1 if (i and scale) else 0)
 
 # inputs are all in range 0-255
 # shamelessly ripped from FastLED
+@micropython.native
 def hsv_to_rainbow_rgb(hue, sat, val, cap):
 
     if cap: val = int(val * led_brightness / 255)
@@ -122,12 +130,14 @@ def hsv_to_rainbow_rgb(hue, sat, val, cap):
     return r, g, b
 
 
+@micropython.native
 def fill_solid(h, s, v):
     for x in range(WIDTH):
         for y in range(HEIGHT):
             led_matrix[x][y] = (h, s, v)
 
 
+@micropython.native
 def render(cap):
     for x in range(WIDTH):
         for y in range(HEIGHT):
@@ -140,7 +150,7 @@ def loading_rings(progress):
     rings = progress * HEIGHT // 100
     for x in range(WIDTH):
         for y in range(HEIGHT):
-            if y <= rings - 1:
+            if y < rings:
                 led_matrix[x][y] = (int(y * 256 / HEIGHT), 255, 255)
             else:
                 led_matrix[x][y] = (0, 0, 0)

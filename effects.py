@@ -1,14 +1,28 @@
 try:
     import uos
     import urandom
+    from utime import sleep_ms, localtime
 except:
     import os as uos
     import random as urandom
+    import time
+    def sleep_ms(n):
+        time.sleep(n / 1000)
+    def localtime():
+        return time.localtime()
+    import types
+    micropython = types.SimpleNamespace()
+    def native(f, *args, **kwargs):
+        def dummy(*args, **kwargs):
+            return f(*args, **kwargs)
+        return dummy
+    micropython.native = native
 
 import led
 import math
 
 
+@micropython.native
 def constrain(x, a, b):
     if x < a:
         return a
@@ -59,6 +73,7 @@ def next_effect(switch):
 
 class Void:
 
+    @micropython.native
     def update(self):
         led.fill_solid(0, 0, 0)
 
@@ -79,6 +94,7 @@ class SelectedColor:
         self.hue = 0
         self.sat = 255
 
+    @micropython.native
     def update(self):
         led.fill_solid(self.hue, self.sat, 255)
 
@@ -101,6 +117,7 @@ class AllHueLoop:
         self.hue = 0
         self.sat = 192
 
+    @micropython.native
     def update(self):
 
         led.fill_solid(self.hue, self.sat, 255)
@@ -127,6 +144,7 @@ class VerticalRainbow:
         self.position = 0
         self.speed = speed
 
+    @micropython.native
     def update(self):
         self.position = (self.position + self.speed) % 256
         for x in range(led.WIDTH):
@@ -150,6 +168,7 @@ class HorizontalRainbow:
         self.position = 0
         self.speed = speed
 
+    @micropython.native
     def update(self):
         self.position = (self.position + self.speed) % 256
         for x in range(led.WIDTH):
@@ -173,6 +192,7 @@ class Matrix:
         self.scale = scale
         self.step = step
 
+    @micropython.native
     def update(self):
 
         for x in range(led.WIDTH):
@@ -205,6 +225,7 @@ class Sparkles:
         self.scale = scale
         self.step = step
 
+    @micropython.native
     def update(self):
 
         for i in range(self.scale):
@@ -247,6 +268,7 @@ class Lighters:
         self.loop_counter = 0
 
 
+    @micropython.native
     def update(self):
 
         if self.loading_flag:
@@ -307,6 +329,7 @@ class Plasma:
         self.speed = speed
         self.counter = 0
 
+    @micropython.native
     def update(self):
 
         self.counter = self.counter + self.speed
@@ -370,6 +393,7 @@ class Fire:
             self.line[x] = urandom.randrange(64, 256)
 
 
+    @micropython.native
     def update(self):
 
         if self.loading_flag:
