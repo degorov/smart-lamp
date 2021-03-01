@@ -80,7 +80,7 @@ export default function Alarm({ setSave }) {
     }
   }, [API, setConnected]);
 
-  const saveAlarm = () => async () => {
+  const saveAlarm = () => () => {
     setAlarm((alarm) => {
       (async () => {
         const result = await API.savealarm(

@@ -46,7 +46,7 @@ export default function Settings({ ip, setIp, setSave }) {
   const [connected, setConnected] = useContext(ConnectionContext);
   const API = useContext(ApiContext);
 
-  const [alert, setAlert] = React.useState(false);
+  const [alert, setAlert] = useState(false);
   const openAlert = () => setAlert(true);
   const closeAlert = () => setAlert(false);
 
@@ -102,7 +102,7 @@ export default function Settings({ ip, setIp, setSave }) {
     }
   }, [API, connected, setConnected]);
 
-  const saveSettings = () => async () => {
+  const saveSettings = () => () => {
     setSettings((settings) => {
       (async () => {
         const result = await API.savesettings(
