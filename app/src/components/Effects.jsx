@@ -4,8 +4,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
 import Slider from '@material-ui/core/Slider';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -59,7 +57,7 @@ export default function Effects() {
   const [maxBrightness, setMaxBrightness] = useState(minBrightness);
 
   const [effect, setEffect] = useState({ index: 0, value: 0, save: false });
-  const defaultValues = [0, 255, 192, 20, 20, -40, 4, 5, 10, 1];
+  const defaultValues = [0, 255, 192, 10, 10, -40, 2, 5, 10, 0, 34];
 
   const handleChangeBrightness = (event, newValue) => {
     setBrightness(newValue);
@@ -81,10 +79,6 @@ export default function Effects() {
     setEffect({ ...effect, value, save: true });
   };
 
-  const handleChangeParamCheckbox = (event) => {
-    setEffect({ ...effect, value: +event.target.checked, save: true });
-  };
-
   const loadEffects = useCallback(async () => {
     const result = await API.geteffects();
     if (!result) {
@@ -96,7 +90,6 @@ export default function Effects() {
     }
   }, [API, setConnected]);
 
-  // save brightness
   const handleCommitBrightness = async (event, newValue) => {
     const result = await API.setbrightness(newValue);
     if (!result) {
@@ -104,7 +97,6 @@ export default function Effects() {
     }
   };
 
-  // save effect
   useEffect(() => {
     if (effect.save) {
       (async () => {
@@ -198,12 +190,14 @@ export default function Effects() {
 
       {[
         [2, 'Цвета по кругу', 0, 255],
-        [3, 'Вертикальная радуга', 0, 32],
-        [4, 'Горизонтальная радуга', 0, 32],
+        [3, 'Вертикальная радуга', 0, 16],
+        [4, 'Горизонтальная радуга', 0, 16],
         [5, 'Матрица', -150, -5],
         [6, 'Вспышки', 1, 32],
         [7, 'Светлячки', 1, 16],
         [8, 'Плазма', 5, 50],
+        [9, 'Пламя', 0, 255],
+        [10, 'Часы', 0, 255],
       ].map((x) => (
         <Accordion key={x[0]} expanded={effect.index === x[0]} onChange={handleEffect(x[0])}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -221,24 +215,6 @@ export default function Effects() {
           </AccordionDetails>
         </Accordion>
       ))}
-
-      <Accordion expanded={effect.index === 9} onChange={handleEffect(9)}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Огонь</Typography>
-        </AccordionSummary>
-        <AccordionDetails className={classes.params}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={!!effect.value}
-                onChange={handleChangeParamCheckbox}
-                color="primary"
-              />
-            }
-            label="Искры"
-          />
-        </AccordionDetails>
-      </Accordion>
     </>
   );
 }

@@ -60,7 +60,6 @@ def router(payload):
 
 def geteffects():
     if effects.current_effect.__class__.__name__ == 'Dawn':
-        effects.current_effect_idx = 3
         effects.next_effect(False)
     return {
         "error": "OK",

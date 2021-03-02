@@ -28,6 +28,7 @@ listbox.insert(6, 'Sparkles')
 listbox.insert(7, 'Lighters')
 listbox.insert(8, 'Plasma')
 listbox.insert(9, 'Fire')
+listbox.insert(10, 'Clock')
 
 def onselect(event):
     w = event.widget

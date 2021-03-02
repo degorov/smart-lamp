@@ -99,6 +99,7 @@ class Dawn:
         self.alarm = alarm
         self.after = after
         self.delta = 255 / (alarm - before)
+        effects.current_effect_idx = 10
 
     @micropython.native
     def update(self):
