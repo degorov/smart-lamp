@@ -23,7 +23,7 @@ export default function Api(showLoader, storageIp) {
   const fetcher = async (ip = storageIp(), payload) => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), TIMEOUT);
-    showLoader(true);
+    const loading = setTimeout(() => showLoader(true), 300);
     try {
       const response = await fetch(`http://${ip}/`, {
         signal: controller.signal,
@@ -36,6 +36,7 @@ export default function Api(showLoader, storageIp) {
       return await response.json();
     } finally {
       clearTimeout(timeout);
+      clearTimeout(loading);
       showLoader(false);
     }
   };
