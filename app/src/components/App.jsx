@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { hot } from 'react-hot-loader/root';
 import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import { ruRU } from '@material-ui/core/locale';
 
 import Backdrop from '@material-ui/core/Backdrop';
@@ -36,7 +36,7 @@ function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const theme = useMemo(
     () =>
-      createMuiTheme(
+      createTheme(
         {
           palette: {
             primary: {
