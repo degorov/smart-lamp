@@ -3,3 +3,7 @@ cfg/
 
 app/node_modules/
 app/dist/
+
+app/resources/android/icon
+app/resources/android/splash
+app/android/app/src/main/res/**/*.png
