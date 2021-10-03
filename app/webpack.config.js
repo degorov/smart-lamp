@@ -54,7 +54,9 @@ const config = {
     },
   },
   devServer: {
-    contentBase: './dist',
+    static: {
+      directory: './dist',
+    },
   },
   plugins: [
     new CopyPlugin({
