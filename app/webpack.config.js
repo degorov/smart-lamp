@@ -82,7 +82,7 @@ const config = {
     minimizer: [`...`, new CssMinimizerPlugin()],
   },
   performance: {
-    maxAssetSize: 384000,
+    maxAssetSize: 409600,
     maxEntrypointSize: 512000,
   },
 };

@@ -1,9 +1,22 @@
 Wi-Fi smart lamp built with ESP32 and MicroPython
 Frontend app built with React and Material UI
-
-Sorry, app and documentation is only in Russian for now, but full sources are available anyway.
+Android app built with Capacitor and its Community HTTP Plugin
 
 ====================================================================================================
+
+Добавлено в сентябре 2021 / Updated September 2021:
+
+Из-за обновлений политики безопасности в Chrome 94, веб-версия приложения больше не работает
+в этом браузере. Для Android в разделе Releases есть собранный apk-файл.
+
+Due to security policy updates in Chrome 94, web app stopped working there.
+Apk for Android is available in the Releases section.
+
+Больше информации / more info here: https://developer.chrome.com/blog/private-network-access-update/
+
+====================================================================================================
+
+Sorry, app and documentation is only in Russian for now, but full sources are available anyway.
 
 Начало работы
 
