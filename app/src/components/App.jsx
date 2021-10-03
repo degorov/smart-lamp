@@ -97,7 +97,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container disableGutters maxWidth="sm">
+      <Container disableGutters>
         <ConnectionContext.Provider value={[connected, setConnected]}>
           <TopBar title={pageTitles[page]} save={save} />
           <Box className={classes.offset}>

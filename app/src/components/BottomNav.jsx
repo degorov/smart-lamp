@@ -13,7 +13,7 @@ import { ConnectionContext } from './AppContexts';
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-    maxWidth: theme.breakpoints.values.sm,
+    maxWidth: theme.breakpoints.values.lg,
     position: 'fixed',
     bottom: 0,
     zIndex: 100,
