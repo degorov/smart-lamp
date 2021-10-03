@@ -4,6 +4,8 @@ object-assign
 @license MIT
 */
 
+/*! Capacitor: https://capacitorjs.com/ - MIT License */
+
 /**
  * A better abstraction over CSS.
  *
