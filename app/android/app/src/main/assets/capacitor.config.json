@@ -1,0 +1,6 @@
+{
+	"appId": "com.degorov.lamp",
+	"appName": "Светильник",
+	"webDir": "dist",
+	"bundledWebRuntime": false
+}
